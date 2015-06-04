@@ -37,9 +37,12 @@ class CBU_Line:
        self.JobKey=""
        self.MemberType=""
        self.DuesType=""
-       ##Things that aren't in the spread sheet
+
+       ##Things that aren't in the original spread sheet
+       ##And need to refered to exlicitly not by set value
        self.UpdatedDuesType=""
        self.WasUpdated="No"
+
     
     def SetValue(self,i,v):
         if i==0:
@@ -102,8 +105,10 @@ class CBU_Line:
             self.MemberType=v
         elif i==29:
             self.DuesType=v
+        elif i==30:
+            self.totTermsAsGrad=v
         else:
-            print "NO DICE"
+            print "Error in CBU line"
 
 
 

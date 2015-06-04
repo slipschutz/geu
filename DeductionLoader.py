@@ -13,8 +13,8 @@ def LoadDeduction(FileName):
     sh1 = book2.sheet_by_index(0)
     
     
-    MapForDeductionsList={}
-    FirstNameLastNameList={}
+    MapForDeductionsList={} #Map from NetID 2 all information found in dues deduction line
+    FirstNameLastNameList={}#Map from firstname+lastname to all info
 
     for rowNumber in range(1,sh1.nrows):#skip the first row
 
@@ -29,18 +29,18 @@ def LoadDeduction(FileName):
             nameList =nameTemp.split(",")
 
             if len(nameList) == 2:
-                temp.LastName=nameList[0].strip()
-                temp.FirstName=nameList[1].strip()
+                temp.LastName=nameList[0].strip().lower()
+                temp.FirstName=nameList[1].strip().lower()
             else:
                 temp.LastName="empty"
                 temp.firstName="empty"
 
-            temp.SubArea=str(theRow[3].value).strip();
-            temp.EmployeeGroup=str(theRow[4].value).strip();
+            temp.SubArea=str(theRow[3].value).strip().lower()
+            temp.EmployeeGroup=str(theRow[4].value).strip().lower()
             temp.WageTypeNum=theRow[5].value
-            temp.WageTypeText=str(theRow[6].value).strip();
+            temp.WageTypeText=str(theRow[6].value).strip().lower();
             temp.DeductionAmt=theRow[7].value
-            temp.NetId=str(theRow[8].value).strip();
+            temp.NetId=str(theRow[8].value).strip().lower();
 
             MapForDeductionsList[temp.NetId.lower()]=temp
 

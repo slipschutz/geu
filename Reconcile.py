@@ -1,59 +1,29 @@
 #!/usr/bin/env python3
 
-#
-# IMPORT THINGS or else
-#
+
+
+
 import sys
 sys.path.append("xlwt-0.7.5")
-import xlwt
+#sys.path.append("openpyxl-2.2.2")
+
+from xlwt import *
 
 from CBULine import *
 from DeductionLine import *
 
-
 import CBULoader
 import DeductionLoader
 
-from os import listdir
-from os.path import isfile, join
-
-def is_number(s):
-    try:
-        float(s)
-        return True
-    except ValueError:
-        return False
 
 
 
-
-if __name__ == "__main__" :
-
-    MapForCBU,MapForEmptyNetIdCBU=  CBULoader.LoadCBU("GEU_CBU.xlsx") # returns MapForCbu then MapForEmptyNetIdCbu
-    MapForDeductionsList,FirstNameLastNameList= DeductionLoader.LoadDeduction("GEU_DUES.xlsx")#returns MapForDeductonsList
-
+def Reconcile(CBU_File,Dues_File,GuiWindow):
+    MapForCBU,MapForEmptyNetIdCBU=  CBULoader.LoadCBU(CBU_File) # returns MapForCbu then MapForEmptyNetIdCbu
+    MapForDeductionsList,FirstNameLastNameList= DeductionLoader.LoadDeduction(Dues_File)#returns MapForDeductonsList
     
-
-    deductionFileNames = [ f for f in listdir("./DeductionData") if isfile(join("./DeductionData",f)) ]
-
-    MapForAllDeductionFiles={}
-    for i in deductionFileNames:
-        splitName=i.split("-")
-        datePart=splitName[0].strip()
-
-        MapForAllDeductionFiles[float(datePart)]=DeductionLoader.LoadDeduction(join("./DeductionData",i))
-
-
-    for date,thing in MapForAllDeductionFiles.iteritems():
-        
-        for netId,line in thing[0].iteritems():
-            if line.NetId == "salekinv":
-                print (date)
-                line.PrintShort()
+#    print MapForDeductionsList
     
-    sys.exit()
-
-
 
     MapForInCBUButNotInDeductions={}
     MapForInBothLists={}
@@ -62,14 +32,14 @@ if __name__ == "__main__" :
         if NetId in MapForDeductionsList:         #NetId is in both lists
             if CBULine.DuesType != MapForDeductionsList[NetId].WageTypeText: ## CBU Entry needs updating
                 CBULine.UpdatedDuesType =MapForDeductionsList[NetId].WageTypeText
-                CBULine.WasUpdated="Yes"
-            else:
+                CBULine.WasUpdated="yes"
+            else: # does not need updating in the CBU list 
                 CBULine.UpdatedDuesType =CBULine.DuesType
-                CBULine.WasUpdated="No"
-
+                CBULine.WasUpdated="no"
+            #now put entry in the MapFor Both Lists 
             MapForInBothLists[NetId]=CBULine
 
-        else:
+        else: #Entry is in CBU list but _NOT_ in deductions list
             MapForInCBUButNotInDeductions[NetId]=CBULine
 
     #For the people in CBU but not in deductions seperate again based on whether there is a dues tpye listed
@@ -81,6 +51,7 @@ if __name__ == "__main__" :
             MapForInCBUButNotInDeductionsWithNoDuesStatus[netid]=line
         else:
             MapForInCBUButNotInDeductionsWithDuesStatus[netid]=line
+
 
 
     #Look if the CBU lines with no NetId match a first/last name in deduction list
@@ -106,20 +77,16 @@ if __name__ == "__main__" :
             Department2FeePayers[key]=0
             Department2NonComp[key]=0
 
-        if line.UpdatedDuesType == "GEU Dues":
+        if line.UpdatedDuesType == "geu dues":
             Department2Members[key] +=1
-        elif line.UpdatedDuesType == "GEU Fees-C":
+        elif line.UpdatedDuesType == "geu fees-c":
             Department2FeePayers[key] +=1
-        elif line.UpdatedDuesType == "GEU Fees-NC":
+        elif line.UpdatedDuesType == "geu fees-nc":
             Department2NonComp[key] +=1
 
-
-
-
-
-    style = xlwt.XFStyle()
-
-    wb = xlwt.Workbook()
+    
+#########################Write everything to a file#######################
+    wb = Workbook()
     ws0 = wb.add_sheet('ReconciledCBU')
     
     count=0
@@ -164,47 +131,29 @@ if __name__ == "__main__" :
     for name,val in Department2Members.iteritems():
         tot=float(Department2Members[name]+Department2FeePayers[name]+Department2NonComp[name])
         ws4.write(count,0,name)
-        ws4.write(count,1,(Department2Members[name]/tot) * 100)
-        ws4.write(count,2,Department2FeePayers[name]/tot *100)
-        ws4.write(count,3,Department2NonComp[name]/tot *100)
-        ws4.write(count,4,tot )
+        if tot != 0 :
+            ws4.write(count,1,(Department2Members[name]/tot) * 100)
+            ws4.write(count,2,Department2FeePayers[name]/tot *100)
+            ws4.write(count,3,Department2NonComp[name]/tot *100)
+            ws4.write(count,4,tot )
+
         count=count+1
+
+
+    temp =CBU_File.split('/')
+    temp2=Dues_File.split('/')
     
+    temp3 = temp[2].split('.')
+    temp4 = temp2[2].split('.')
+
+    outFileName="./ReconciledData/"+temp3[0]+"_"+temp4[0]+".xls"
 
 
-    
+    try: 
+        wb.save(outFileName)
+        #GuiWindow.DisplayMessageWindow("Created Reconciled File ")
+    except IOError:
+        print "You probabaly need to close the OutPut File"
 
-    wb.save("test.xls")
-
-
-################################################################################################################
-
-
-
-def temp():
-    
-    MapForElle = { (0.25,1):423.076, (0.25,2):444.2308,(0.25,3):465.3846,
-                   (0.5,1):846.1538, (0.5,2):888.4615, (0.5,3):930.7692,
-                   (0.75,1):1269.23, (0.75,2):1332.692,(0.75,3):1396.194}
-    
-    total=0
-    totalWithMin=0
-    numPeopleBelowMin=0
-    for NetId,CBULine in MapForCBU.iteritems():
-        if is_number(CBULine.PayRate ):
-            temp =(CBULine.GA_Percentage/100,CBULine.SalaryLevel)
-            minPay=MapForElle[temp]
-            if CBULine.PayRate*1.05 < minPay:
-                numPeopleBelowMin=numPeopleBelowMin+1
-                totalWithMin=totalWithMin+minPay
-            else:
-                totalWithMin=totalWithMin+CBULine.PayRate*1.05
-
-            total=total+float(CBULine.PayRate)
-            
-
-    print ("Total Byweekly amount paid to people", total)
-    print (numPeopleBelowMin)
-    print ("total with mins ",totalWithMin)
-    print ("increase per 19.5 periods ", (totalWithMin-total)*19.5)
+        
 

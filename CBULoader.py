@@ -14,9 +14,6 @@ def LoadCBU(FileName):
 
     sh = book.sheet_by_index(0)
 
-
-
-
     MapForCBU={}
     MapForEmptyNetIdCBU={}
     
@@ -25,14 +22,14 @@ def LoadCBU(FileName):
         temp = CBU_Line()
         for i in range(0,len(theRow)):
             if theRow[i].ctype == 0 : # for empty cells
-                temp.SetValue(i,"empty")
+                temp.SetValue(i," ")
             elif theRow[i].ctype == 1: # for text
-                temp.SetValue(i,theRow[i].value.strip())
+                temp.SetValue(i,theRow[i].value.strip().lower())
             else:#everything else
                 temp.SetValue(i,theRow[i].value)
 
-        if temp.NetId == "empty" :
-            if temp.LastName != "empty":
+        if temp.NetId == " " :
+            if temp.LastName != " ":
                 MapForEmptyNetIdCBU[temp.LastName.lower()]=temp
             else:
                 print "CBU has no netId and no lastName"
