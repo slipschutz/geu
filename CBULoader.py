@@ -16,15 +16,17 @@ def LoadCBU(FileName):
 
     MapForCBU={}
     MapForEmptyNetIdCBU={}
-    
-    for rowNumber in range(1,sh.nrows):#skip the first row
+    FirstLastNameCBU={}
+    #Skip the first line, where there should be 
+    #the titles for the colums
+    for rowNumber in range(1,sh.nrows):
         theRow=sh.row(rowNumber)
         temp = CBU_Line()
         for i in range(0,len(theRow)):
             if theRow[i].ctype == 0 : # for empty cells
                 temp.SetValue(i," ")
             elif theRow[i].ctype == 1: # for text
-                temp.SetValue(i,theRow[i].value.strip().lower())
+                temp.SetValue(i,theRow[i].value.strip())
             else:#everything else
                 temp.SetValue(i,theRow[i].value)
 
@@ -36,7 +38,8 @@ def LoadCBU(FileName):
         else :
             MapForCBU[temp.NetId.lower()]=temp
             
-
-    return MapForCBU,MapForEmptyNetIdCBU
+        FirstLastNameCBU[str(temp.FirstName).lower()+str(temp.LastName).lower()]=temp
+            
+    return MapForCBU,MapForEmptyNetIdCBU,FirstLastNameCBU
 
 

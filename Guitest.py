@@ -6,6 +6,10 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import LoadDeductionDataBase
 import LoadCBUDataBase
+import LoadReconciledDataBase
+from os.path import join
+
+import matplotlib.pyplot as plt
 
 from Reconcile import Reconcile
 # Load the GUI class from the .ui file
@@ -26,6 +30,38 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.ReconcileButton.clicked.connect(self.ReconcileButtonClicked)
         self.DeductionData =LoadDeductionDataBase.LoadDataBase(self)
         self.CBUData = LoadCBUDataBase.LoadDataBase(self)
+        self.ReconciledData = LoadReconciledDataBase.LoadDataBase(self)
+
+        tempList=[]
+        for date,sheet in self.ReconciledData.iteritems():
+            tempList.append(date)
+        
+        aSheet=self.ReconciledData[tempList[0]]
+        mapOfDeparts={}
+        for netid,line in sheet.iteritems():
+            mapOfDeparts[line.GetValueByTag("EmployUnitName")]=4
+            
+        
+        tempList.sort()
+        for depart,nothing in mapOfDeparts.iteritems():
+            print depart  
+            for x in tempList:
+              theSheet=self.ReconciledData[x]
+              memberCount=0.0
+              totalCount=0.0
+  
+              for netid,line in theSheet.iteritems():
+                  #                print line.GetValueByTag("UpdatedWageType")
+                  #                if str(line.GetValueByTag("UpdatedWageType")).strip().lower() == "geu dues":
+                  if line.GetValueByTag("EmployUnitName") == depart:
+                      if "dues" in str(line.GetValueByTag("UpdatedWageType")).strip().lower():
+                          memberCount+=1
+                      totalCount+=1
+              if totalCount==0:
+                  totalCount=-1
+              print x,"   ",memberCount/totalCount,"   ",totalCount
+
+
 
         # Connect a function to be run when a button is pressed.
         self.ui.actionExit.triggered.connect(self.close)
@@ -48,11 +84,11 @@ class MainWindow(QtGui.QMainWindow):
     def ItemDoubleClickedInDuesFileList(self,TheItem):
         # print "The Following item was selected"
         # print TheItem.text()
-        self.DuesFileForReconcile="./DeductionData/"+str(TheItem.text())
+        self.DuesFileForReconcile=join("DeductionData",str(TheItem.text()))
         self.ui.labelDuesFile.setText(TheItem.text())
 
     def ItemDoubleClickedInCBUFileList(self,TheItem):
-        self.CBUFileForReconcile="./CBUData/"+str(TheItem.text())
+        self.CBUFileForReconcile=join("CBUData",str(TheItem.text()))
         self.ui.labelCBUFile.setText(TheItem.text())
 
     def RemoveFileButtonClicked(self):
@@ -67,7 +103,7 @@ class MainWindow(QtGui.QMainWindow):
                 if dateDues.year == dateCBU.year and dateDues.month==dateCBU.month:
                     DuesFile = "%d%02d%02d-GEUDues" %(dateDues.year,dateDues.month,dateDues.day)
                     CBUFile = "%d%02d%02d-GEUCBU" %(dateCBU.year,dateCBU.month,dateCBU.day)
-                    Reconcile("./CBUData/"+CBUFile+".xlsx","./DeductionData/"+DuesFile+".xlsx",self)
+                    Reconcile(join("CBUData",CBUFile+".xlsx"),join("DeductionData",DuesFile+".xlsx"),self)
                     ReconciledFiles =ReconciledFiles+"\n"+DuesFile+"_"+CBUFile
                 endif=0
         
@@ -77,10 +113,10 @@ class MainWindow(QtGui.QMainWindow):
 
     def ASearchWasDone(self):
         theNetId= str(self.ui.SearchLine.text())
-        theNetId = theNetId.lower()
+        theNetId = theNetId.strip().lower()
         aMap={}
         aList=[]
-        for date, TheMap in self.DeductionData.iteritems():
+        for date, TheMap in self.ReconciledData.iteritems():
             if theNetId in TheMap:
                 #TheMap[theNetId].PrintShort()
                 aList.append(date)
@@ -90,11 +126,22 @@ class MainWindow(QtGui.QMainWindow):
         
         aList.sort()
         self.ui.searchOutputBox.clear()
+        if len(aList) == 0:
+            self.ui.searchOutputBox.append("No results found")
+        else:
+            theForm="%-16.16s %-8.8s %-10.10s %-7.7s %-5.5s %-5.5s %-5.5s %-5.5s %-8.8s %-8.8s"
 
-        for x in aList:
-            dateString=str(x.year)+ "-%02d" % x.month +"-%02d" % x.day
-            infoString=str(aMap[x].WageTypeText)
-            self.ui.searchOutputBox.append(QString(dateString)+"   "+QString(infoString))
+            headerString = theForm %("Date","WageType","EmployedUnit","PayRate","GAPer","Terms","Group","Amt","OnlyCBU","OnlyDues")
+            print headerString
+            self.ui.searchOutputBox.textCursor().insertHtml(headerString)
+            for x in aList:
+                dateString=str(x.year)+ "-%02d" % x.month +"-%02d" % x.day
+                infoString=theForm % (str(dateString),str(aMap[x].GetValueByTag("UpdatedWageType")),str(aMap[x].GetValueByTag("EmployUnitName")),str(aMap[x].GetValueByTag("GA_PAY_RATE")),str(aMap[x].GetValueByTag("GA_PERCENTAGE")),str(aMap[x].GetValueByTag("total_ga_terms")),str(aMap[x].GetValueByTag("EmployeeGroup")),str(aMap[x].GetValueByTag("DeductionAmt")),str(aMap[x].GetValueByTag("OnlyInCBU")),str(aMap[x].GetValueByTag("OnlyInDues")))
+                print QString(infoString)
+                
+                self.ui.searchOutputBox.append(infoString)#QString(infoString))
+                #self.ui.searchOutputBox.textCursor().insertHtml('normal text')
+
         #self.ui.searchOutputBox.setPlainText("this is a test \n this is a new line")
 
 

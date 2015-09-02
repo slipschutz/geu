@@ -3,7 +3,7 @@
 ################################################################################################################
 #vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv#
 
-
+NumberOfColumnsInCBU=31
 class CBU_Line:
     def __init__(self):
        self.LastName=""
@@ -40,8 +40,8 @@ class CBU_Line:
 
        ##Things that aren't in the original spread sheet
        ##And need to refered to exlicitly not by set value
-       self.UpdatedDuesType=""
-       self.WasUpdated="No"
+#       self.UpdatedDuesType=""
+#       self.WasUpdated="No"
 
     
     def SetValue(self,i,v):
@@ -173,30 +173,28 @@ class CBU_Line:
             return self.MemberType 
         elif i==29:
             return self.DuesType 
-        elif i==30:
-            return self.UpdatedDuesType
-        elif i==31:
-            return self.WasUpdated
         else:
-            return "ERROR"
+            return "ERROR IN CBULINe"
 
 
 
-    def PrintShort(self):
-        if self.WasUpdated == False :
-            print "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"
-            print self.FirstName," ",self.LastName
-            print "NETID=",self.NetId
-            print "DuesType=",self.DuesType
-            print "EnrolledUnit=",self.EnrolledUnitName
-            print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
-        else :
-            print "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"
-            print self.FirstName," ",self.LastName
-            print "NETID=",self.NetId
-            print "DuesType=",self.DuesType," UpdatedDues=",self.UpdatedDuesType
-            print "EnrolledUnit=",self.EnrolledUnitName
-            print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+    ################################################################################
+    # def PrintShort(self):                                                        #
+    #     if self.WasUpdated == False :                                            #
+    #         print "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"                            #
+    #         print self.FirstName," ",self.LastName                               #
+    #         print "NETID=",self.NetId                                            #
+    #         print "DuesType=",self.DuesType                                      #
+    #         print "EnrolledUnit=",self.EnrolledUnitName                          #
+    #         print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"                            #
+    #     else :                                                                   #
+    #         print "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"                            #
+    #         print self.FirstName," ",self.LastName                               #
+    #         print "NETID=",self.NetId                                            #
+    #         print "DuesType=",self.DuesType," UpdatedDues=",self.UpdatedDuesType #
+    #         print "EnrolledUnit=",self.EnrolledUnitName                          #
+    #         print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"                            #
+    ################################################################################
 
 
 #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^a#

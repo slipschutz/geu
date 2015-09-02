@@ -15,50 +15,120 @@ from DeductionLine import *
 import CBULoader
 import DeductionLoader
 
+import ReconciledEntry 
 
-
+from os import listdir
+from os.path import isfile, join
+import os
 
 def Reconcile(CBU_File,Dues_File,GuiWindow):
-    MapForCBU,MapForEmptyNetIdCBU=  CBULoader.LoadCBU(CBU_File) # returns MapForCbu then MapForEmptyNetIdCbu
+    MapForCBU,MapForEmptyNetIdCBU,MapForFirstLastCBU=  CBULoader.LoadCBU(CBU_File) # returns MapForCbu then MapForEmptyNetIdCbu
     MapForDeductionsList,FirstNameLastNameList= DeductionLoader.LoadDeduction(Dues_File)#returns MapForDeductonsList
     
 #    print MapForDeductionsList
     
 
     MapForInCBUButNotInDeductions={}
-    MapForInBothLists={}
+    ReconciledMap={}
+
 
     for NetId,CBULine in MapForCBU.iteritems():
         if NetId in MapForDeductionsList:         #NetId is in both lists
-            if CBULine.DuesType != MapForDeductionsList[NetId].WageTypeText: ## CBU Entry needs updating
-                CBULine.UpdatedDuesType =MapForDeductionsList[NetId].WageTypeText
-                CBULine.WasUpdated="yes"
+            #first copy over info from CBULine to ReconciledEntry object
+            temp=ReconciledEntry.ReconciledEntry()
+            temp.CopyCBUInfo(CBULine)
+            temp.CopyDuesInfo(MapForDeductionsList[NetId])
+            if CBULine.DuesType.lower() != MapForDeductionsList[NetId].WageTypeText.lower():
+                ## CBU Entry needs updating
+                temp.SetValueByTag("UpdatedWageType",MapForDeductionsList[NetId].WageTypeText)
+                temp.SetValueByTag("WasUpdated","yes")
+
             else: # does not need updating in the CBU list 
-                CBULine.UpdatedDuesType =CBULine.DuesType
-                CBULine.WasUpdated="no"
+                temp.SetValueByTag("UpdatedWageType",CBULine.DuesType)
+                temp.SetValueByTag("WasUpdated","no")
+                # CBULine.UpdatedDuesType =CBULine.DuesType
+                # CBULine.WasUpdated="no"
             #now put entry in the MapFor Both Lists 
-            MapForInBothLists[NetId]=CBULine
+            ReconciledMap[NetId]=temp
 
-        else: #Entry is in CBU list but _NOT_ in deductions list
-            MapForInCBUButNotInDeductions[NetId]=CBULine
+        #Entry is in the CBU list but does not have a matching net ID in deductions
+        #Look to see if this CBULine matchs based on last and first name
+        else:
+            tempkey="fakefakefake"
+            if CBULine.FirstName != " " and CBULine.LastName!=" ":
+                tempkey = (str(CBULine.FirstName)+str(CBULine.LastName)).strip().lower()
 
-    #For the people in CBU but not in deductions seperate again based on whether there is a dues tpye listed
-    MapForInCBUButNotInDeductionsWithDuesStatus={}
-    MapForInCBUButNotInDeductionsWithNoDuesStatus={}
+            if tempkey in FirstNameLastNameList:
+                #This CBU line is in the deductions file but with wrong NETID    
+                temp=ReconciledEntry.ReconciledEntry()
+                temp.CopyCBUInfo(CBULine)
+                duesNetId=FirstNameLastNameList[tempkey].NetId
+                temp.CopyDuesInfo(FirstNameLastNameList[tempkey])
+                temp.SetValueByTag("DuesFileNetId",duesNetId)
+
+                if CBULine.DuesType.lower() != \
+                        FirstNameLastNameList[tempkey].WageTypeText.lower():
+                    temp.SetValueByTag("UpdatedWageType",\
+                                           FirstNameLastNameList[tempkey].WageTypeText)
+                    temp.SetValueByTag("WasUpdated","yes")
+                else: # does not need updating in the CBU list 
+                    temp.SetValueByTag("UpdatedWageType",CBULine.DuesType)
+                    temp.SetValueByTag("WasUpdated","no")
+
+                #Put the reconciled entry in to the map using the 
+                #net id from the CBU list
+                #which is still going to be unique
+                ReconciledMap[NetId]=temp
+
+                
+            else:
+                MapForInCBUButNotInDeductions[NetId]=CBULine
+    endfor=0
+
 
     for netid, line in MapForInCBUButNotInDeductions.iteritems():
-        if line.DuesType == "empty": 
-            MapForInCBUButNotInDeductionsWithNoDuesStatus[netid]=line
-        else:
-            MapForInCBUButNotInDeductionsWithDuesStatus[netid]=line
+        temp=ReconciledEntry.ReconciledEntry()
+        temp.CopyCBUInfo(line)
+        temp.SetValueByTag("OnlyInCBU","yes")
+        temp.SetValueByTag("UpdatedWageType",line.DuesType)
+        temp.SetValueByTag("WasUpdated","no")
+        ReconciledMap[netid]=temp
 
 
+
+
+### Do search from the dues list.  Look to see if there are things in here 
+### That are not in the CBU List
+    for netid, deductionLine in MapForDeductionsList.iteritems():
+        if netid not in MapForCBU:
+            tempKey=str(deductionLine.FirstName+deductionLine.LastName).lower()
+        
+            if tempKey not in MapForFirstLastCBU:
+            ###There is a line in the deduction list that does
+            #not match the CBU list by net id and does not match by first/last name
+        
+                temp=ReconciledEntry.ReconciledEntry()
+#### you broke it here.  THis was suppposed to go in the above not in deductions part
+                temp.CopyDuesInfo(deductionLine)
+                temp.SetValueByTag("OnlyInDues","yes")
+                temp.SetValueByTag("UpdatedWageType",deductionLine.WageTypeText)
+                temp.SetValueByTag("WasUpdated","no")
+                temp.SetValueByTag("MSUNETID",deductionLine.NetId)
+                temp.SetValueByTag("DuesFileNetId",deductionLine.NetId)
+
+                ReconciledMap[netid]=temp
+        
+            else:
+                #this is a entry that does not match by net id but DOES match on last/first
+                #these entries were already taken care of
+                pass
+        
+            endif=0
 
     #Look if the CBU lines with no NetId match a first/last name in deduction list
     for netid,line in MapForEmptyNetIdCBU.iteritems():
         tempNameThing=line.FirstName+line.LastName
         tempNameThing=tempNameThing.lower()
-
         if tempNameThing in FirstNameLastNameList:
             print ("Found")
 
@@ -67,8 +137,8 @@ def Reconcile(CBU_File,Dues_File,GuiWindow):
     Department2FeePayers={}
     Department2NonComp={}
 
-    for netid, line in MapForInBothLists.iteritems():
-        key =line.EnrolledUnitName.lower()
+    for netid, line in ReconciledMap.iteritems():
+        key =line.GetValueByTag("EnrolledUnitName").lower()
 
         if key in Department2Members:
             pass
@@ -77,22 +147,28 @@ def Reconcile(CBU_File,Dues_File,GuiWindow):
             Department2FeePayers[key]=0
             Department2NonComp[key]=0
 
-        if line.UpdatedDuesType == "geu dues":
+        if line.GetValueByTag("UpdatedWageType").lower() == "geu dues":
             Department2Members[key] +=1
-        elif line.UpdatedDuesType == "geu fees-c":
+        elif line.GetValueByTag("UpdatedWageType").lower() == "geu fees-c":
             Department2FeePayers[key] +=1
-        elif line.UpdatedDuesType == "geu fees-nc":
+        elif line.GetValueByTag("UpdatedWageType").lower() == "geu fees-nc":
             Department2NonComp[key] +=1
-
+        else:
+            Department2NonComp[key] +=1
     
 #########################Write everything to a file#######################
     wb = Workbook()
     ws0 = wb.add_sheet('ReconciledCBU')
     
-    count=0
-    for netid,line in MapForInBothLists.iteritems():
-        for i in range(32):
-            ws0.write(count, i,line.GetValue(i))
+    count=0 
+    for i in ReconciledEntry.ListOfColumnNames:
+        ws0.write(0,count,i)
+        count=count+1
+
+    count=1
+    for netid,line in ReconciledMap.iteritems():
+        for i in range(len(ReconciledEntry.ListOfColumnNames)):
+            ws0.write(count, i,line.GetValueByIndex(i))
         count=count+1
 
 
@@ -104,19 +180,19 @@ def Reconcile(CBU_File,Dues_File,GuiWindow):
         count=count+1
 
 
-    ws2 = wb.add_sheet('CBUNotDeductWithDuesStatus')
-    count=0
-    for netid,line in MapForInCBUButNotInDeductionsWithDuesStatus.iteritems():
-        for i in range(32):
-            ws2.write(count, i,line.GetValue(i))
-        count=count+1
+    # ws2 = wb.add_sheet('CBUNotDeductWithDuesStatus')
+    # count=0
+    # for netid,line in MapForInCBUButNotInDeductionsWithDuesStatus.iteritems():
+    #     for i in range(32):
+    #         ws2.write(count, i,line.GetValue(i))
+    #     count=count+1
 
-    ws3 = wb.add_sheet('CBUNotDeductWithNoDuesStatus')
-    count=0
-    for netid,line in MapForInCBUButNotInDeductionsWithNoDuesStatus.iteritems():
-        for i in range(32):
-            ws3.write(count, i,line.GetValue(i))
-        count=count+1
+    # ws3 = wb.add_sheet('CBUNotDeductWithNoDuesStatus')
+    # count=0
+    # for netid,line in MapForInCBUButNotInDeductionsWithNoDuesStatus.iteritems():
+    #     for i in range(32):
+    #         ws3.write(count, i,line.GetValue(i))
+    #     count=count+1
     
 
    # print len(Department2Members)," ",len(Department2FeePayers)," ",len(Department2NonComp)
@@ -128,25 +204,30 @@ def Reconcile(CBU_File,Dues_File,GuiWindow):
     ws4.write(0,2,"FeePayers")
     ws4.write(0,3,"Non-Compliant")
     ws4.write(0,4,"Total members")
+    totalNumberOfPeople=0
+    totalMembersEveryWhere=0
     for name,val in Department2Members.iteritems():
         tot=float(Department2Members[name]+Department2FeePayers[name]+Department2NonComp[name])
+        totalNumberOfPeople+=tot
+        totalMembersEveryWhere+=float(Department2Members[name])
         ws4.write(count,0,name)
         if tot != 0 :
             ws4.write(count,1,(Department2Members[name]/tot) * 100)
             ws4.write(count,2,Department2FeePayers[name]/tot *100)
             ws4.write(count,3,Department2NonComp[name]/tot *100)
             ws4.write(count,4,tot )
-
+        
         count=count+1
 
-
-    temp =CBU_File.split('/')
-    temp2=Dues_File.split('/')
+    ws4.write(count+1,1,totalMembersEveryWhere/totalNumberOfPeople)
+    temp =os.path.split(CBU_File)[1]
+    temp2=os.path.split(Dues_File)[1]
     
-    temp3 = temp[2].split('.')
-    temp4 = temp2[2].split('.')
+    temp3 = temp.split('.')
+    temp4 = temp2.split('.')
 
-    outFileName="./ReconciledData/"+temp3[0]+"_"+temp4[0]+".xls"
+
+    outFileName=join("ReconciledData",temp3[0]+"_"+temp4[0]+".xls")
 
 
     try: 

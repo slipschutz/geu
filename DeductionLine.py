@@ -20,7 +20,19 @@ class DeductionLine:
         print self.FirstName," ",self.LastName
         print "NetId=",self.NetId
         print "WageType=",self.WageTypeText
-    
+
+    def Print(self):
+        print self.LastName,  self.FirstName
+        print "Employee Number=",self.EmployeeNumber
+        print "PayDay=",self.PayDay
+        print "SubArea=",self.SubArea
+        print "EmployeeGroup=",self.EmployeeGroup
+        print "WageTypeNum=",self.WageTypeNum
+        print "WageTypeText=",self.WageTypeText
+        print "DeductionAmy=",self.DeductionAmt
+        print "NetId=",self.NetId
+
+        
 #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^a#
 ################################################################################################################
 ################################################################################################################
