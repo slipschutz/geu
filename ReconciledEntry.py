@@ -35,14 +35,18 @@ ListOfColumnNames=["Lastname",
                    "EmployeeGroup",
                    "DeductionAmt",
                    "OnlyInCBU",
-                   "OnlyInDues"]
+                   "OnlyInDues",
+                   "Date",
+                   "joe"]
 
 
 from CBULine import *
+from DeductionLoader import *
 
 class ReconciledEntry:
     def __init__(self):
         self.theStuff={}
+        self.DuesPersonInfo=PersonInfoFromDeductionFile()
         for i in ListOfColumnNames:
             self.theStuff[i]=" "
 
@@ -80,6 +84,16 @@ class ReconciledEntry:
             self.SetValueByIndex(i,CBUInfo.GetValue(i))
 
     def CopyDuesInfo(self,DUESInfo):
-        self.SetValueByTag("EmployeeGroup",DUESInfo.EmployeeGroup)
-        self.SetValueByTag("DeductionAmt",DUESInfo.DeductionAmt)
-    
+        self.DuesPersonInfo=DUESInfo
+
+    def SetDuesPersonInfo(self,num):
+        if num >= len(self.DuesPersonInfo.Lines):
+            print "ERROR CANT DO THAT num=",num
+
+        self.SetValueByTag("EmployeeGroup",self.DuesPersonInfo.Lines[num].EmployeeGroup)
+        self.SetValueByTag("DeductionAmt",self.DuesPersonInfo.Lines[num].DeductionAmt)
+        self.SetValueByTag("Lastname",self.DuesPersonInfo.Lines[num].LastName)
+        self.SetValueByTag("Firstname",self.DuesPersonInfo.Lines[num].FirstName)
+        self.SetValueByTag("UpdatedWageType",self.DuesPersonInfo.Lines[num].WageTypeText)
+        self.SetValueByTag("Date",self.DuesPersonInfo.Lines[num].PayDay)
+
