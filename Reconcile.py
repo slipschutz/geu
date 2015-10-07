@@ -115,7 +115,7 @@ def Reconcile(CBU_File,Dues_File,GuiWindow):
                 temp.SetValueByTag("WasUpdated","no")
                 temp.SetValueByTag("MSUNETID",deductionLine.NetId)
                 temp.SetValueByTag("DuesFileNetId",deductionLine.NetId)
-
+                
                 ReconciledMap[netid]=temp
         
             else:

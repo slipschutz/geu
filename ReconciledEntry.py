@@ -35,7 +35,9 @@ ListOfColumnNames=["Lastname",
                    "EmployeeGroup",
                    "DeductionAmt",
                    "OnlyInCBU",
-                   "OnlyInDues"]
+                   "OnlyInDues",
+                   "blah",
+                   "joe"]
 
 
 from CBULine import *
@@ -82,4 +84,5 @@ class ReconciledEntry:
     def CopyDuesInfo(self,DUESInfo):
         self.SetValueByTag("EmployeeGroup",DUESInfo.EmployeeGroup)
         self.SetValueByTag("DeductionAmt",DUESInfo.DeductionAmt)
-    
+        self.SetValueByTag("Lastname",DUESInfo.LastName)
+        self.SetValueByTag("Firstname",DUESInfo.FirstName)
