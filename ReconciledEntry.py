@@ -84,12 +84,6 @@ class ReconciledEntry:
             self.SetValueByIndex(i,CBUInfo.GetValue(i))
 
     def CopyDuesInfo(self,DUESInfo):
-<<<<<<< HEAD
-        self.SetValueByTag("EmployeeGroup",DUESInfo.EmployeeGroup)
-        self.SetValueByTag("DeductionAmt",DUESInfo.DeductionAmt)
-        self.SetValueByTag("Lastname",DUESInfo.LastName)
-        self.SetValueByTag("Firstname",DUESInfo.FirstName)
-=======
         self.DuesPersonInfo=DUESInfo
 
     def SetDuesPersonInfo(self,num):
@@ -103,4 +97,4 @@ class ReconciledEntry:
         self.SetValueByTag("UpdatedWageType",self.DuesPersonInfo.Lines[num].WageTypeText)
         self.SetValueByTag("Date",self.DuesPersonInfo.Lines[num].PayDay)
 
->>>>>>> 9efd6675d12f0c38b8c1d605568fa65661048d07
+

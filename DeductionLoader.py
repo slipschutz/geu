@@ -88,7 +88,7 @@ def LoadDeduction(FileName):
             dateTEMP =theRow[HeaderMap["pay date"]].value
 
             tupleThing =xlrd.xldate.xldate_as_datetime(dateTEMP, book2.datemode)
-            temp.PayDay=dateTEMP
+            temp.PayDay=tupleThing
             temp.SubArea=theRow[HeaderMap["pers.subarea"]].value
             temp.EmployeeGroup=theRow[HeaderMap["employeegroup"]].value
             temp.WageTypeNum=theRow[HeaderMap["wagetype"]].value
@@ -115,12 +115,11 @@ def LoadDeduction(FileName):
                 #apppend the deduction line object the personInfo's
                 #list of lines
                 MapForDeductionsList[netid].Lines.append(temp)
-
             else:
                 personInfo=PersonInfoFromDeductionFile()
                 personInfo.Lines.append(temp)
                 MapForDeductionsList[netid]=personInfo
-                FirstNameLastNameList[tempNameKey]=personInfo
+
 
             if tempNameKey in FirstNameLastNameList:
                 FirstNameLastNameList[tempNameKey].Lines.append(temp)
