@@ -30,36 +30,36 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.ReconcileButton.clicked.connect(self.ReconcileButtonClicked)
         self.DeductionData =LoadDeductionDataBase.LoadDataBase(self)
         self.CBUData = LoadCBUDataBase.LoadDataBase(self)
-        self.ReconciledData = LoadReconciledDataBase.LoadDataBase(self)
+        self.ReconciledData =0# LoadReconciledDataBase.LoadDataBase(self)
 
-        tempList=[]
-        for date,sheet in self.ReconciledData.iteritems():
-            tempList.append(date)
+        # tempList=[]
+        # for date,sheet in self.ReconciledData.iteritems():
+        #     tempList.append(date)
         
-        aSheet=self.ReconciledData[tempList[0]]
-        mapOfDeparts={}
-        for netid,line in sheet.iteritems():
-            mapOfDeparts[line.GetValueByTag("EmployUnitName")]=4
+        # aSheet=self.ReconciledData[tempList[0]]
+        # mapOfDeparts={}
+        # for netid,line in sheet.iteritems():
+        #     mapOfDeparts[line.GetValueByTag("EmployUnitName")]=4
             
         
-        tempList.sort()
-        for depart,nothing in mapOfDeparts.iteritems():
-            print depart  
-            for x in tempList:
-              theSheet=self.ReconciledData[x]
-              memberCount=0.0
-              totalCount=0.0
+        # tempList.sort()
+        # for depart,nothing in mapOfDeparts.iteritems():
+        #     print depart  
+        #     for x in tempList:
+        #       theSheet=self.ReconciledData[x]
+        #       memberCount=0.0
+        #       totalCount=0.0
   
-              for netid,line in theSheet.iteritems():
-                  #                print line.GetValueByTag("UpdatedWageType")
-                  #                if str(line.GetValueByTag("UpdatedWageType")).strip().lower() == "geu dues":
-                  if line.GetValueByTag("EmployUnitName") == depart:
-                      if "dues" in str(line.GetValueByTag("UpdatedWageType")).strip().lower():
-                          memberCount+=1
-                      totalCount+=1
-              if totalCount==0:
-                  totalCount=-1
-              print x,"   ",memberCount/totalCount,"   ",totalCount
+        #       for netid,line in theSheet.iteritems():
+        #           #                print line.GetValueByTag("UpdatedWageType")
+        #           #                if str(line.GetValueByTag("UpdatedWageType")).strip().lower() == "geu dues":
+        #           if line.GetValueByTag("EmployUnitName") == depart:
+        #               if "dues" in str(line.GetValueByTag("UpdatedWageType")).strip().lower():
+        #                   memberCount+=1
+        #               totalCount+=1
+        #       if totalCount==0:
+        #           totalCount=-1
+        #       print x,"   ",memberCount/totalCount,"   ",totalCount
 
 
 

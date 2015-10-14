@@ -20,12 +20,17 @@ import ReconciledEntry
 from os import listdir
 from os.path import isfile, join
 import os
+import datetime
 
 def Reconcile(CBU_File,Dues_File,GuiWindow):
     MapForCBU,MapForEmptyNetIdCBU,MapForFirstLastCBU=  CBULoader.LoadCBU(CBU_File) # returns MapForCbu then MapForEmptyNetIdCbu
     MapForDeductionsList,FirstNameLastNameList= DeductionLoader.LoadDeduction(Dues_File)#returns MapForDeductonsList
     
-#    print MapForDeductionsList
+    Dues_File_Temp=os.path.basename(Dues_File)
+    splitName=Dues_File_Temp.split("-")
+    datePart=splitName[0].strip()
+    dateTemp=datetime.datetime.strptime(datePart,"%Y%m%d").date()
+    DefualtDate=str(dateTemp)
     
 
     MapForInCBUButNotInDeductions={}
@@ -84,6 +89,7 @@ def Reconcile(CBU_File,Dues_File,GuiWindow):
                 MapForInCBUButNotInDeductions[NetId]=CBULine
     endfor=0
 
+    print "Recondiled SIZE IS ",len(ReconciledMap)
 
     for netid, line in MapForInCBUButNotInDeductions.iteritems():
         temp=ReconciledEntry.ReconciledEntry()
@@ -93,7 +99,7 @@ def Reconcile(CBU_File,Dues_File,GuiWindow):
         temp.SetValueByTag("WasUpdated","no")
         ReconciledMap[netid]=temp
 
-
+    print "SIZE IS ",len(MapForInCBUButNotInDeductions)
 
 
 ### Do search from the dues list.  Look to see if there are things in here 
@@ -161,17 +167,23 @@ def Reconcile(CBU_File,Dues_File,GuiWindow):
     ws0 = wb.add_sheet('ReconciledCBU')
     
     count=0 
-    for i in ReconciledEntry.ListOfColumnNames:
+    for i in ReconciledEntry.ListOfKnackNames:
         ws0.write(0,count,i)
         count=count+1
 
     count=1
     for netid,line in ReconciledMap.iteritems():
-        for j in range(len(line.DuesPersonInfo.Lines)):
-            line.SetDuesPersonInfo(j)#Choose one of the entries from the deduction file
+        if len(line.DuesPersonInfo.Lines) == 0:
+            line.SetValueByTag("Date",DefualtDate)
             for i in range(len(ReconciledEntry.ListOfColumnNames)):
                 ws0.write(count, i,line.GetValueByIndex(i))
             count=count+1
+        else:
+            for j in range(len(line.DuesPersonInfo.Lines)):
+                line.SetDuesPersonInfo(j)#Choose one of the entries from the deduction file
+                for i in range(len(ReconciledEntry.ListOfColumnNames)):
+                    ws0.write(count, i,line.GetValueByIndex(i))
+                count=count+1
 
 
     ws1 = wb.add_sheet('BlankNetIdInCBU')

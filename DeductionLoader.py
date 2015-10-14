@@ -88,7 +88,7 @@ def LoadDeduction(FileName):
             dateTEMP =theRow[HeaderMap["pay date"]].value
 
             tupleThing =xlrd.xldate.xldate_as_datetime(dateTEMP, book2.datemode)
-            temp.PayDay=tupleThing
+            temp.PayDay=str(tupleThing.date())
             temp.SubArea=theRow[HeaderMap["pers.subarea"]].value
             temp.EmployeeGroup=theRow[HeaderMap["employeegroup"]].value
             temp.WageTypeNum=theRow[HeaderMap["wagetype"]].value
