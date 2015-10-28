@@ -20,8 +20,8 @@ import datetime
 from Reconcile import Reconcile
 
 dict ={"ZIMMERST":"09/22/2015",
-"YUJING5	":"09/24/2015",
-"YUJING5	":"09/24/2015",
+"YUJING5":"09/24/2015",
+"YUJING5":"09/24/2015",
 "YOUSIFAH":"08/24/2015",
 "YOOKJI	":"08/23/2015",
 "YARRANTO":"10/07/2015",
@@ -272,13 +272,63 @@ dict ={"ZIMMERST":"09/22/2015",
 "ALANAHAR":"08/29/2015",
 "AJALAADE":"10/07/2015"}
 
+magicFactor=3.5
 
+def PrintThing(List,ListOfAmounts,NumOfExpectedPayDays,salary,rate):
+
+    s=""
+    ignore=False
+    AmountRecieved=0
+    AmountWeShouldHaveGotten=0
+    if len(List) < NumOfExpectedPayDays:
+        AmountWeShouldHaveGotten=magicFactor*rate*salary
+    
+        AmountRecieved=0
+        for x in ListOfAmounts:
+            AmountRecieved=AmountRecieved+x
+
+        s=str(AmountRecieved)+","+str(AmountWeShouldHaveGotten) 
+
+        for i in range(len(List)):
+            s=s+","+str(List[i])+"("+str(ListOfAmounts[i])+")"
+    else:
+        ignore=True;
+
+    if float(AmountRecieved) >= float(AmountWeShouldHaveGotten):
+        ignore=True
+
+    return s,ignore
+
+def fake():
+    sept4="Missing"
+    sept18="Missing"
+    oct2="Missing"
+    oct16="Missing"
+    
+    for x in List:
+        temp=datetime.datetime.strptime(x,"%Y-%m-%d")
+        if temp.day==4:
+            sept4="Paid"
+        elif temp.day==18:
+            sept18="Paid"
+        elif temp.day==2:
+            oct2="Paid"
+        elif temp.day==16:
+            oct16="Paid"
+
+    if sept4=="Paid" and sept18=="Paid" and oct2=="Paid" and oct16=="Paid":
+        ignore=True
+    else:
+        ignore=False
+    
+    s=sept4 +"," + sept18 +"," +oct2 +","+oct16
+    return s,ignore
 
 
 class TempInfo:
     def __init__(self):
         self.ListOfDates=[]
-
+        self.ListOfAmounts=[]
 
 def is_number(s):
     try:
@@ -286,6 +336,20 @@ def is_number(s):
         return True
     except ValueError:
         return False
+
+def AddToPayDayMap(mapOfPayDays,deductionMap):
+    for netid,info in deductionMap.iteritems():
+        if netid in mapOfPayDays:
+            for x in info.Lines:
+                mapOfPayDays[netid].ListOfDates.append(x.PayDay)
+                mapOfPayDays[netid].ListOfAmounts.append(x.DeductionAmt)
+        else:
+            temp111=TempInfo()
+            for x in info.Lines:
+                temp111.ListOfDates.append(x.PayDay)
+                temp111.ListOfAmounts.append(x.DeductionAmt)
+            mapOfPayDays[netid]=temp111
+
 
 if __name__=='__main__':
 
@@ -296,17 +360,37 @@ if __name__=='__main__':
     NetIdMapSept4,LastFirstMapSept4=DeductionLoader.LoadDeduction("./DeductionData/20150904-GEUDues.xlsx");
     NetIdMapSept18,LastFirstMapSept18=DeductionLoader.LoadDeduction("./DeductionData/20150918-GEUDues.xlsx");
     NetIdMapOct2,LastFirstMapOct2=DeductionLoader.LoadDeduction("./DeductionData/20151002-GEUDues.xlsx");
+    NetIdMapOct16,LastFirstMapOct16=DeductionLoader.LoadDeduction("./DeductionData/20151016-GEUDues.xlsx");
 
     NetIdMapMay15,LastFirstMapMay15=DeductionLoader.LoadDeduction("./DeductionData/20150515-GEUDues.xlsx");
 
-    CBUMapSept,trash,trash1 = CBULoader.LoadCBU("./CBUData/20150901-GEUCBU.xlsx")
+    CBUMapSept,trash,FirstLastCBUSept = CBULoader.LoadCBU("./CBUData/20150901-GEUCBU.xlsx")
+
+    CBUMapOct,trash,FirstLastCBUOct = CBULoader.LoadCBU("./CBUData/20151001-GEUCBU.xlsx")
     
+
+    # for firstLastKey,info in FirstLastCBUOct.iteritems():
+    #     if firstLastKey not in FirstLastCBUSept:
+    #         print info.FirstName,",",info.LastName,",",info.EnrolledUnitName
+    # print "_________"
+    # for firstLastKey,info in FirstLastCBUSept.iteritems():
+    #     if firstLastKey not in FirstLastCBUOct:
+    #         print info.FirstName,",",info.LastName,",",info.EnrolledUnitName
+
+    # exit()
     
-    ##First find all the people who were are in the list  and september CBU list
+    ##First find all the people who were are in the list  and the October CBU list
+    # mapOfPeopleToCheck={}
+    # for netid,Date in dict.iteritems():
+    #     if netid.strip().lower() in CBUMapOct:
+    #         dateTemp=datetime.datetime.strptime(Date.strip(),"%m/%d/%Y")
+    #         mapOfPeopleToCheck[netid.strip().lower()]=dateTemp
+
+
     mapOfPeopleToCheck={}
-    for netid,Date in dict.iteritems():
-        if netid.strip().lower() in CBUMapSept:
-            dateTemp=datetime.datetime.strptime(Date.strip(),"%m/%d/%Y")
+    for netid,Date in NetIdMapSept4.iteritems():
+        if netid.strip().lower() in CBUMapOct and netid.upper() not in dict and netid.lower() not in NetIdMapMay15:
+            dateTemp=datetime.datetime.strptime("05/15/2015","%m/%d/%Y")
             mapOfPeopleToCheck[netid.strip().lower()]=dateTemp
 
 
@@ -316,36 +400,44 @@ if __name__=='__main__':
 
     #loop over all the deductiions maps and build a map of dates
     mapOfPayDays={}
-    for netid,info in NetIdMapSept4.iteritems():
-        if netid in mapOfPayDays:
-            for x in info.Lines:
-                mapOfPayDays[netid].ListOfDates.append(x.PayDay)
-        else:
-            temp111=TempInfo()
-            for x in info.Lines:
-                temp111.ListOfDates.append(x.PayDay)
-            mapOfPayDays[netid]=temp111
+
+    AddToPayDayMap(mapOfPayDays,NetIdMapSept4)
+    AddToPayDayMap(mapOfPayDays,NetIdMapSept18)
+    AddToPayDayMap(mapOfPayDays,NetIdMapOct2)
+    AddToPayDayMap(mapOfPayDays,NetIdMapOct16)
+
+    print "There are ",len(mapOfPeopleToCheck), "People to check"
+
+    # for netid,info in NetIdMapSept4.iteritems():
+    #     if netid in mapOfPayDays:
+    #         for x in info.Lines:
+    #             mapOfPayDays[netid].ListOfDates.append(x.PayDay)
+    #     else:
+    #         temp111=TempInfo()
+    #         for x in info.Lines:
+    #             temp111.ListOfDates.append(x.PayDay)
+    #         mapOfPayDays[netid]=temp111
 
 
-    for netid,info in NetIdMapSept18.iteritems():
-        if netid in mapOfPayDays:
-            for x in info.Lines:
-                mapOfPayDays[netid].ListOfDates.append(x.PayDay)
-        else:
-            temp111=TempInfo()
-            for x in info.Lines:
-                temp111.ListOfDates.append(x.PayDay)
-            mapOfPayDays[netid]=temp111
+    # for netid,info in NetIdMapSept18.iteritems():
+    #     if netid in mapOfPayDays:
+    #         for x in info.Lines:
+    #             mapOfPayDays[netid].ListOfDates.append(x.PayDay)
+    #     else:
+    #         temp111=TempInfo()
+    #         for x in info.Lines:
+    #             temp111.ListOfDates.append(x.PayDay)
+    #         mapOfPayDays[netid]=temp111
 
-    for netid,info in NetIdMapOct2.iteritems():
-        if netid in mapOfPayDays:
-            for x in info.Lines:
-                mapOfPayDays[netid].ListOfDates.append(x.PayDay)
-        else:
-            temp111=TempInfo()
-            for x in info.Lines:
-                temp111.ListOfDates.append(x.PayDay)
-            mapOfPayDays[netid]=temp111
+    # for netid,info in NetIdMapOct2.iteritems():
+    #     if netid in mapOfPayDays:
+    #         for x in info.Lines:
+    #             mapOfPayDays[netid].ListOfDates.append(x.PayDay)
+    #     else:
+    #         temp111=TempInfo()
+    #         for x in info.Lines:
+    #             temp111.ListOfDates.append(x.PayDay)
+    #         mapOfPayDays[netid]=temp111
 
 
 
@@ -353,21 +445,56 @@ if __name__=='__main__':
 
     for netid, info in mapOfPayDays.iteritems():
         info.ListOfDates.sort()
-  
+
+
 
     for netid,date in mapOfPeopleToCheck.iteritems():
-        dateTemp=datetime.datetime.strptime("08/31/2015","%m/%d/%Y")
-        if netid in mapOfPayDays:
-            if len(mapOfPayDays[netid].ListOfDates) != 3:
-                if date <=dateTemp:#and date >=datetime.datetime.strptime("08/20/2015","%m/%d/%Y"):
-                    s=""
-                    for x in mapOfPayDays[netid].ListOfDates:
-                        s=s+" "+x
-                    print date.date(),netid,CBUMapSept[netid].FirstName,CBUMapSept[netid].LastName,s
+        dateTemp=datetime.datetime.strptime("05/30/2015","%m/%d/%Y")
+        dateTemp2=datetime.datetime.strptime("05/01/2015","%m/%d/%Y")
+        numOfExpectedPayDays=4
+        salary=CBUMapOct[netid].PayRate
+        
+        duesStatus="GEU Dues"
+        if netid in NetIdMapSept4:
+            duesStatus=NetIdMapSept4[netid].Lines[0].WageTypeText
+
+        if duesStatus.lower().strip()=="geu dues":
+            rate=0.016
+        elif duesStatus.lower().strip()=="geu fees-c":
+            rate=0.0144
         else:
-            
+            rate=0
+
+        if not is_number(salary):
+            salary=0
+            #print "HI"
+
+        if date <=dateTemp and date >=dateTemp2:
+            if netid in mapOfPayDays:
+                s,ignore=PrintThing(mapOfPayDays[netid].ListOfDates,mapOfPayDays[netid].ListOfAmounts,numOfExpectedPayDays,salary,rate)
+                if ignore==False:
+                    print date.date(),",",netid,",",CBUMapOct[netid].FirstName,",",CBUMapOct[netid].LastName,",",duesStatus,",",salary,",",rate*salary,",",s
+            else:
+                if rate !=0:
+                    print date.date(),",",netid,",",CBUMapOct[netid].FirstName,",",CBUMapOct[netid].LastName,",",duesStatus,",",salary,",",rate*salary,",0,",magicFactor*rate*salary
 
     exit()
+
+  
+
+    # for netid,date in mapOfPeopleToCheck.iteritems():
+    #     dateTemp=datetime.datetime.strptime("08/31/2015","%m/%d/%Y")
+    #     if netid in mapOfPayDays:
+    #         if len(mapOfPayDays[netid].ListOfDates) != 3:
+    #             if date <=dateTemp:#and date >=datetime.datetime.strptime("08/20/2015","%m/%d/%Y"):
+    #                 s=""
+    #                 for x in mapOfPayDays[netid].ListOfDates:
+    #                     s=s+" "+x
+    #                 print date.date(),netid,CBUMapSept[netid].FirstName,CBUMapSept[netid].LastName,s
+    #     else:
+            
+
+
     total=0
     for netid,DeductionInfo in mapOfPeopleToCheck.iteritems():
         if DeductionInfo.Lines[0].WageTypeText=="GEU Fees-C":
