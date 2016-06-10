@@ -8,10 +8,10 @@ from CBULine import *
 
 
 def LoadCBU(FileName):
-
+    #Open the Excell Book
     book = xlrd.open_workbook(FileName) #"GEU_CBU.xlsx")
-
-
+    print FileName
+    #Open the first sheet 
     sh = book.sheet_by_index(0)
 
     MapForCBU={}
@@ -22,13 +22,13 @@ def LoadCBU(FileName):
     for rowNumber in range(1,sh.nrows):
         theRow=sh.row(rowNumber)
         temp = CBU_Line()
-        for i in range(0,len(theRow)):
+        for i in range(1,len(theRow)):
             if theRow[i].ctype == 0 : # for empty cells
-                temp.SetValue(i," ")
+                temp.SetValue(i-1," ")
             elif theRow[i].ctype == 1: # for text
-                temp.SetValue(i,theRow[i].value.strip())
+                temp.SetValue(i-1,theRow[i].value.strip())
             else:#everything else
-                temp.SetValue(i,theRow[i].value)
+                temp.SetValue(i-1,theRow[i].value)
 
         if temp.NetId == " " :
             if temp.LastName != " ":

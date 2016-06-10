@@ -30,7 +30,7 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.ReconcileButton.clicked.connect(self.ReconcileButtonClicked)
         self.DeductionData =LoadDeductionDataBase.LoadDataBase(self)
         self.CBUData = LoadCBUDataBase.LoadDataBase(self)
-        self.ReconciledData =0# LoadReconciledDataBase.LoadDataBase(self)
+        self.ReconciledData =LoadReconciledDataBase.LoadDataBase(self)
 
         # tempList=[]
         # for date,sheet in self.ReconciledData.iteritems():

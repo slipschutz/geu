@@ -53,7 +53,6 @@ def LoadDeduction(FileName):
 
         theRow=sh1.row(rowNumber)
         numberOfCols =len(theRow)
-        
         ##check to seee if the line is a good entry line
         if theRow[HeaderMap["pers.subarea"]].ctype !=0 and theRow[HeaderMap["pay date"]].ctype!=0 and theRow[HeaderMap["employeegroup"]].ctype !=0:
             temp = DeductionLine()
@@ -88,7 +87,8 @@ def LoadDeduction(FileName):
             dateTEMP =theRow[HeaderMap["pay date"]].value
 
             tupleThing =xlrd.xldate.xldate_as_datetime(dateTEMP, book2.datemode)
-            temp.PayDay=str(tupleThing.date())
+            temp.PayDay=tupleThing.date().strftime("%m/%d/%Y") # str(tupleThing.date())
+            
             temp.SubArea=theRow[HeaderMap["pers.subarea"]].value
             temp.EmployeeGroup=theRow[HeaderMap["employeegroup"]].value
             temp.WageTypeNum=theRow[HeaderMap["wagetype"]].value

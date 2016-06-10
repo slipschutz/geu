@@ -16,6 +16,7 @@ class DeductionLine:
        self.DeductionAmt=0
        self.NetId=""
 
+
     def PrintShort(self):
         print self.FirstName," ",self.LastName
         print "NetId=",self.NetId

@@ -12,7 +12,7 @@ from xlwt import *
 from CBULine import *
 from DeductionLine import *
 
-import CBULoader
+import CBULoader2
 import DeductionLoader
 
 import ReconciledEntry 
@@ -22,8 +22,35 @@ from os.path import isfile, join
 import os
 import datetime
 
-def Reconcile(CBU_File,Dues_File,GuiWindow):
-    MapForCBU,MapForEmptyNetIdCBU,MapForFirstLastCBU=  CBULoader.LoadCBU(CBU_File) # returns MapForCbu then MapForEmptyNetIdCbu
+def AttemptBlankNetIdRecovery(EmptyNetIdMap,DuesFirstLastMap,GoodCBUNetIdList):
+    DuesDeductionEmployeeIDs={}
+    for key, info in DuesFirstLastMap.iteritems():
+        DuesDeductionEmployeeIDs[info.Lines[0].EmployeeNumber]=info
+        
+    #loop over all of the empty net ids in the CBU list
+    for key, info in EmptyNetIdMap.iteritems():
+        #First Try to find based on first name and lastname
+        if key in DuesFirstLastMap:
+            info.NetId=DuesFirstLastMap[key].NetId
+            GoodCBUNetIdList[DuesFirstLastMap[key].NetId]=info
+            
+        if info.PersonnelNumber in DuesDeductionEmployeeIDs:
+            netid=DuesDeductionEmployeeIDs[info.PersonnelNumber].Lines[0].NetId
+            info.NetId=netid
+            GoodCBUNetIdList[netid]=info
+
+
+
+            
+def AttemptCBUEmployeeNumberRecovery(CBUNetId,DeductionNetId):
+    for netid, CBUInfo in CBUNetId.iteritems():
+        if CBUInfo.PersonnelNumber==" ":
+            print "DDDD"
+            
+
+def Reconcile(CBU_File,Dues_File):
+    # returns MapForCbu then MapForEmptyNetIdCbu
+    MapForCBU,MapForFirstLastCBU,EmptyNetIdMap=  CBULoader2.LoadCBU(CBU_File) 
     MapForDeductionsList,FirstNameLastNameList= DeductionLoader.LoadDeduction(Dues_File)#returns MapForDeductonsList
     
     Dues_File_Temp=os.path.basename(Dues_File)
@@ -37,6 +64,24 @@ def Reconcile(CBU_File,Dues_File,GuiWindow):
     ReconciledMap={}
 
 
+    
+
+    AttemptBlankNetIdRecovery(EmptyNetIdMap,FirstNameLastNameList,MapForCBU)
+
+#    AttemptCBUEmployeeNumberRecovery(MapForCBU,MapForDeductionsList)
+
+    MapOfAllNetIds={}
+    for netid,info in MapForCBU.iteritems():
+        MapOfAllNetIds[netid]=info
+
+    for netid,info in MapForDeductionsList.iteritems():
+        MapOfAllNetIds[netid]=info
+
+
+
+
+    return 0
+    
     for NetId,CBULine in MapForCBU.iteritems():
         if NetId in MapForDeductionsList:         #NetId is in both lists
             #first copy over info from CBULine to ReconciledEntry object

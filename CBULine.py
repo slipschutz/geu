@@ -23,7 +23,7 @@ class CBU_Line:
        self.LocalId=0
        self.PermAddressLine1=""
        self.PermAddressLine2=""
-       
+      
        self.PermCityName=""
        self.PermStateCode=""
        self.PermZipCode=""
@@ -37,12 +37,86 @@ class CBU_Line:
        self.JobKey=""
        self.MemberType=""
        self.DuesType=""
-
+       self.PersonnelNumber=0
+       self.StartDateString=""
        ##Things that aren't in the original spread sheet
        ##And need to refered to exlicitly not by set value
 #       self.UpdatedDuesType=""
 #       self.WasUpdated="No"
 
+    def SetValueWithMap(self,HeaderMap,i,v):
+        if i not in HeaderMap:
+            print "Error in CBULine: Can't match column",i,"to a feild"
+            throw 
+
+        colName=HeaderMap[i]
+        if colName=="perm_line_adr1":
+            self.PermAddressLine1=v
+        elif colName=="perm_line_adr2":
+            self.PermAddressLine2=v
+        elif colName=="perm_city_name":
+            self.PermCityName=v
+        elif colName=="perm_state_code":
+            self.PermStateCode=v
+        elif colName=="perm_zip_code":
+            self.PermZipCode=v
+        elif colName=="perm_cntry_code":
+            self.PermCountryCode=v
+        elif colName=="perm_tlphn_id":
+            self.PermId=v
+        elif colName=="local_line_adr1":
+            self.LocalAddresLine1=v
+        elif colName=="local_line_adr2":
+            self.LocalAddressLine2=v
+        elif colName=="local_city_name":
+            self.LocalCityName=v
+        elif colName=="local_state_code":
+            self.LocalStateCode=v
+        elif colName=="local_zip_code":
+            self.LocalZipCode=v
+        elif colName=="local_cntry_code":
+            self.LocalCountryCode=v
+        elif colName=="local_tlphn_id":
+            self.LocalId=v
+        elif colName=="personnelnumber":
+            self.PersonnelNumber=v
+        elif colName=="lastname":
+            self.LastName=v
+        elif colName=="firstname":
+            self.FirstName=v
+        elif colName=="email":
+            self.Email=v
+        elif colName=="ga_salary_level":
+            self.SalaryLevel=v
+        elif colName=="ga_percentage":
+            self.GA_Percentage=v
+        elif colName=="ga_pay_rate":
+            self.PayRate=v
+        elif colName=="total_ga_terms":
+            self.TotalGATerms=v
+        elif colName=="payroll_restrict":
+            self.PayrollRestrict=v
+        elif colName=="msunetid":
+            self.NetId=v
+        elif colName=="enrolledunit":
+            self.EnrolledUnit=v
+        elif colName=="enrolledunitname":
+            self.EnrolledUnitName=v
+        elif colName=="employunit":
+            self.EmployedUnit=v
+        elif colName=="employunitname":
+            self.EmployedUnitName=v
+        elif colName=="jobkey":
+            self.JobKey=v
+        elif colName=="membertype":
+            self.MemberType=v
+        elif colName=="dueswagetype":
+            self.DuesWageType=v
+        elif colName=="primary_assignment_start_date":
+            self.StartDateString=v
+        else:
+            print "Error in CBULine: Can't match column",colName,"with known field"
+       
     
     def SetValue(self,i,v):
         if i==0:

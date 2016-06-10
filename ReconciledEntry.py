@@ -36,8 +36,7 @@ ListOfColumnNames=["Lastname",
                    "DeductionAmt",
                    "OnlyInCBU",
                    "OnlyInDues",
-                   "Date",
-                   "joe"]
+                   "Date"]
 
 ListOfKnackNames=["Lastname",
                    "Firstname",
@@ -90,6 +89,8 @@ class ReconciledEntry:
             self.theStuff[i]=" "
 
     def GetValueByIndex(self,i):
+        if ListOfColumnNames[i] =="Date":
+            print "HI",self.theStuff[ListOfColumnNames[i]]
         if i < len(ListOfColumnNames):
             return self.theStuff[ListOfColumnNames[i]]
         else:
