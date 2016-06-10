@@ -31,8 +31,9 @@ def LoadCBU(FileName):
                 temp.SetValue(i-1,theRow[i].value)
 
         if temp.NetId == " " :
-            if temp.LastName != " ":
+            if temp.LastName != " " and temp.FirstName !=" ":
                 MapForEmptyNetIdCBU[temp.LastName.lower()]=temp
+                FirstLastNameCBU[str(temp.FirstName).lower()+str(temp.LastName).lower()]=temp
             else:
                 print "CBU has no netId and no lastName"
         else :
