@@ -1,5 +1,5 @@
 
-ListOfColumnNames=["Lastname",
+ListOfColumnNames=["number","Lastname",
                    "Firstname",
                    "Email",
                    "GA_SALARY_LEVEL",
@@ -38,7 +38,7 @@ ListOfColumnNames=["Lastname",
                    "OnlyInDues",
                    "Date"]
 
-ListOfKnackNames=["Lastname",
+ListOfKnackNames=["Payroll Number","Lastname",
                    "Firstname",
                    "MSU Email",
                    "Salary Level",
@@ -75,11 +75,12 @@ ListOfKnackNames=["Lastname",
                    "Deduction Amount",
                    "OnlyInCBU",
                    "OnlyInDues",
-                   "Member Status Date"]
+                   "PayRoll Date",
+                   "Needs Updating"]
 
 
-from CBULine import *
-from DeductionLoader import *
+from CBULine2 import *
+from DeductionLoader2 import *
 
 class ReconciledEntry:
     def __init__(self):
@@ -90,7 +91,7 @@ class ReconciledEntry:
 
     def GetValueByIndex(self,i):
         if ListOfColumnNames[i] =="Date":
-            print "HI",self.theStuff[ListOfColumnNames[i]]
+            pass
         if i < len(ListOfColumnNames):
             return self.theStuff[ListOfColumnNames[i]]
         else:
@@ -101,34 +102,36 @@ class ReconciledEntry:
         if i < len(ListOfColumnNames):
             self.theStuff[ListOfColumnNames[i]]=v
         else:
-            print "can't set index ",i," in ReconciedEntry"
+            print ("can't set index ",i," in ReconciedEntry")
             raise
 
     def SetValueByTag(self,tag,val):
         if tag in self.theStuff:
             self.theStuff[tag]=val
         else:
-            print "can't set tag ", tag, " in ReconciledEntry"
+            print ("can't set tag ", tag, " in ReconciledEntry")
             raise
 
     def GetValueByTag(self,tag):
         if tag in self.theStuff:
            return self.theStuff[tag]
         else:
-            print "can't get tag ", tag, " in ReconciledEntry"
+            print ("can't get tag ", tag, " in ReconciledEntry")
             raise
 
             
     def CopyCBUInfo(self,CBUInfo):
         for i in range(NumberOfColumnsInCBU):
+            #print("I is",i,"cbu value ",CBUInfo.GetValue(i), "colum name ",ListOfColumnNames[i])
             self.SetValueByIndex(i,CBUInfo.GetValue(i))
+
 
     def CopyDuesInfo(self,DUESInfo):
         self.DuesPersonInfo=DUESInfo
 
     def SetDuesPersonInfo(self,num):
         if num >= len(self.DuesPersonInfo.Lines):
-            print "ERROR CANT DO THAT num=",num
+            print ("ERROR CANT DO THAT num=",num)
 
         self.SetValueByTag("EmployeeGroup",self.DuesPersonInfo.Lines[num].EmployeeGroup)
         self.SetValueByTag("DeductionAmt",self.DuesPersonInfo.Lines[num].DeductionAmt)

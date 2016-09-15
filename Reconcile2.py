@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 
 
-
-
 import sys
 sys.path.append("xlwt-0.7.5")
-#sys.path.append("openpyxl-2.2.2")
 
-from xlwt import *
 
-from CBULine import *
-from DeductionLine import *
+from openpyxl import Workbook
+
+#import xlwt
+
+from CBULine2 import *
+from DeductionLine2 import *
 
 import CBULoader2
-import DeductionLoader
+import DeductionLoader2
 
 import ReconciledEntry 
 
@@ -22,22 +22,26 @@ from os.path import isfile, join
 import os
 import datetime
 
-def AttemptBlankNetIdRecovery(EmptyNetIdMap,DuesFirstLastMap,GoodCBUNetIdList):
-    DuesDeductionEmployeeIDs={}
-    for key, info in DuesFirstLastMap.iteritems():
-        DuesDeductionEmployeeIDs[info.Lines[0].EmployeeNumber]=info
+def AttemptBlankNetIdRecovery(CBUWrap,DeductionWrap): #EmptyNetIdMap,DuesFirstLastMap,GoodCBUNetIdList):
+    print("Don't use this function ")
+
         
     #loop over all of the empty net ids in the CBU list
-    for key, info in EmptyNetIdMap.iteritems():
-        #First Try to find based on first name and lastname
-        if key in DuesFirstLastMap:
-            info.NetId=DuesFirstLastMap[key].NetId
-            GoodCBUNetIdList[DuesFirstLastMap[key].NetId]=info
+    #That map should be from firstLast names to info
+    for key, info in CBUWrap.EmptyNetIdMap.items():
+        #First Try to find based on first name and lastname from the DUES list
+        if key in DeductionWrap.FirstLastNameMap:
+            #The first last name key is in the dedcutions map
+            #the record can be recovered
+            print ("recored recovered")
+            #info.NetId=irstLastMap[key].NetId
+            #GoodCBUNetIdList[DuesFirstLastMap[key].NetId]=info
             
-        if info.PersonnelNumber in DuesDeductionEmployeeIDs:
-            netid=DuesDeductionEmployeeIDs[info.PersonnelNumber].Lines[0].NetId
-            info.NetId=netid
-            GoodCBUNetIdList[netid]=info
+        if info.PersonnelNumber in DeductionWrap.EmployeeNumberMap:
+            print ("victory")
+#            netid=DuesDeductionEmployeeIDs[info.PersonnelNumber].Lines[0].NetId
+ #           info.NetId=netid
+  #          GoodCBUNetIdList[netid]=info
 
 
 
@@ -45,14 +49,16 @@ def AttemptBlankNetIdRecovery(EmptyNetIdMap,DuesFirstLastMap,GoodCBUNetIdList):
 def AttemptCBUEmployeeNumberRecovery(CBUNetId,DeductionNetId):
     for netid, CBUInfo in CBUNetId.iteritems():
         if CBUInfo.PersonnelNumber==" ":
-            print "DDDD"
+            print ("DDDD")
             
 
 def Reconcile(CBU_File,Dues_File):
-    # returns MapForCbu then MapForEmptyNetIdCbu
-    MapForCBU,MapForFirstLastCBU,EmptyNetIdMap=  CBULoader2.LoadCBU(CBU_File) 
-    MapForDeductionsList,FirstNameLastNameList= DeductionLoader.LoadDeduction(Dues_File)#returns MapForDeductonsList
-    
+
+ 
+    CBUWrapper=  CBULoader2.LoadCBU(CBU_File) 
+    DeductionsWrapper= DeductionLoader2.LoadDeduction(Dues_File)
+
+
     Dues_File_Temp=os.path.basename(Dues_File)
     splitName=Dues_File_Temp.split("-")
     datePart=splitName[0].strip()
@@ -63,24 +69,98 @@ def Reconcile(CBU_File,Dues_File):
     MapForInCBUButNotInDeductions={}
     ReconciledMap={}
 
+    
+
+
+    MapOfAllNetIds={}
+    
+    DuesID=DeductionsWrapper.NetIdMap
+    CBUID=CBUWrapper.NetIdMap
+
+    for netid,info in CBUID.items():
+        MapOfAllNetIds[netid]=info
+
+    for netid,info in DuesID.items():
+        MapOfAllNetIds[netid]=info
 
     
 
-    AttemptBlankNetIdRecovery(EmptyNetIdMap,FirstNameLastNameList,MapForCBU)
+    for netid, info in MapOfAllNetIds.items():
+        if netid in DuesID and netid in CBUID:
+            ##It is in both lists
+            CBUInfo =CBUID[netid]
+            DuesInfo=DuesID[netid]
+            temp=ReconciledEntry.ReconciledEntry()
+            temp.CopyCBUInfo(CBUInfo)
+            temp.CopyDuesInfo(DuesInfo)
 
-#    AttemptCBUEmployeeNumberRecovery(MapForCBU,MapForDeductionsList)
+            if CBUInfo.DuesWageType.lower() != DuesInfo.Lines[0].WageTypeText.lower():
+                ## CBU Entry needs updating
+                temp.SetValueByTag("UpdatedWageType",DuesInfo.Lines[0].WageTypeText)
+                temp.SetValueByTag("WasUpdated","yes")
 
-    MapOfAllNetIds={}
-    for netid,info in MapForCBU.iteritems():
-        MapOfAllNetIds[netid]=info
+            else: # does not need updating in the CBU list 
+                temp.SetValueByTag("UpdatedWageType",CBUInfo.DuesWageType)
+                temp.SetValueByTag("WasUpdated","no")
+                # CBULine.UpdatedDuesType =CBULine.DuesType
+                # CBULine.WasUpdated="no"
+            #now put entry in the MapFor Both Lists 
+            ReconciledMap[netid]=temp
+        elif netid in DuesID and netid not in CBUID:
+            DuesInfo=DuesID[netid]
+            temp=ReconciledEntry.ReconciledEntry()
+            temp.CopyDuesInfo(DuesInfo)
+            temp.SetValueByTag("MSUNETID",netid.upper())
+            ReconciledMap[netid]=temp
+        elif netid in CBUID and netid not in DuesID:
+            CBUInfo =CBUID[netid]
+            temp=ReconciledEntry.ReconciledEntry()
+            temp.CopyCBUInfo(CBUInfo)
+            ReconciledMap[netid]=temp
 
-    for netid,info in MapForDeductionsList.iteritems():
-        MapOfAllNetIds[netid]=info
+    wb = Workbook()
+
+    temp =os.path.split(CBU_File)[1]
+    temp2=os.path.split(Dues_File)[1]
+    
+    temp3 = temp.split('.')
+    temp4 = temp2.split('.')
+
+
+    dest_filename =join("ReconciledData",temp3[0]+"_"+temp4[0]+".xls")
+
+    ws0 = wb.active
+    ws0.title = "Reconciled List"
+
+
+    count=1
+    for i in ReconciledEntry.ListOfKnackNames:
+        ws0.cell(row=1,column=count,value=i)
+        count=count+1
+
+
+    count=2
+    for netid,line in ReconciledMap.items():
+        if len(line.DuesPersonInfo.Lines) == 0:
+            line.SetValueByTag("Date",DefualtDate)
+            for i in range(len(ReconciledEntry.ListOfColumnNames)):
+                ws0.cell(row=count, column=i+1,value=line.GetValueByIndex(i))
+            ws0.cell(row=count,column=len(ReconciledEntry.ListOfColumnNames)+1,value="Yes")
+            count=count+1
+        else:
+            for j in range(len(line.DuesPersonInfo.Lines)):
+                line.SetDuesPersonInfo(j)#Choose one of the entries from the deduction file
+                for i in range(len(ReconciledEntry.ListOfColumnNames)):
+                    ws0.cell(row=count, column=i+1,value=line.GetValueByIndex(i))
+                ws0.cell(row=count,column=len(ReconciledEntry.ListOfColumnNames)+1,value="Yes")
+                count=count+1
+
+
+    wb.save(filename = dest_filename)
+    return;
 
 
 
-
-    return 0
     
     for NetId,CBULine in MapForCBU.iteritems():
         if NetId in MapForDeductionsList:         #NetId is in both lists
@@ -134,7 +214,7 @@ def Reconcile(CBU_File,Dues_File):
                 MapForInCBUButNotInDeductions[NetId]=CBULine
     endfor=0
 
-    print "Recondiled SIZE IS ",len(ReconciledMap)
+    print ("Recondiled SIZE IS ",len(ReconciledMap))
 
     for netid, line in MapForInCBUButNotInDeductions.iteritems():
         temp=ReconciledEntry.ReconciledEntry()
@@ -144,7 +224,7 @@ def Reconcile(CBU_File,Dues_File):
         temp.SetValueByTag("WasUpdated","no")
         ReconciledMap[netid]=temp
 
-    print "SIZE IS ",len(MapForInCBUButNotInDeductions)
+    print ("SIZE IS ",len(MapForInCBUButNotInDeductions))
 
 
 ### Do search from the dues list.  Look to see if there are things in here 
@@ -304,7 +384,7 @@ def Reconcile(CBU_File,Dues_File):
         wb.save(outFileName)
         #GuiWindow.DisplayMessageWindow("Created Reconciled File ")
     except IOError:
-        print "You probabaly need to close the OutPut File"
+        print ("You probabaly need to close the OutPut File")
 
         
 
