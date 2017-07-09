@@ -10,7 +10,7 @@ from CBULine import *
 def LoadCBU(FileName):
     #Open the Excell Book
     book = xlrd.open_workbook(FileName) #"GEU_CBU.xlsx")
-    print FileName
+    print (FileName)
     #Open the first sheet 
     sh = book.sheet_by_index(0)
 
@@ -35,7 +35,7 @@ def LoadCBU(FileName):
                 MapForEmptyNetIdCBU[temp.LastName.lower()]=temp
                 FirstLastNameCBU[str(temp.FirstName).lower()+str(temp.LastName).lower()]=temp
             else:
-                print "CBU has no netId and no lastName"
+                print ("CBU has no netId and no lastName")
         else :
             MapForCBU[temp.NetId.lower()]=temp
             
