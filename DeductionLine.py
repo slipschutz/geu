@@ -18,23 +18,23 @@ class DeductionLine:
 
 
     def PrintShort(self):
-        print self.FirstName," ",self.LastName
-        print "NetId=",self.NetId
-        print "WageType=",self.WageTypeText
-        print "PayDate=",self.PayDay
-        print "EmployeeGroup=",self.EmployeeGroup
-        print "DeductionAmt=",self.DeductionAmt
+        print (self.FirstName," ",self.LastName)
+        print ("NetId=",self.NetId)
+        print ("WageType=",self.WageTypeText)
+        print ("PayDate=",self.PayDay)
+        print ("EmployeeGroup=",self.EmployeeGroup)
+        print ("DeductionAmt=",self.DeductionAmt)
 
     def Print(self):
-        print self.LastName,  self.FirstName
-        print "Employee Number=",self.EmployeeNumber
-        print "PayDay=",self.PayDay
-        print "SubArea=",self.SubArea
-        print "EmployeeGroup=",self.EmployeeGroup
-        print "WageTypeNum=",self.WageTypeNum
-        print "WageTypeText=",self.WageTypeText
-        print "DeductionAmy=",self.DeductionAmt
-        print "NetId=",self.NetId
+        print (self.LastName,  self.FirstName)
+        print ("Employee Number=",self.EmployeeNumber)
+        print ("PayDay=",self.PayDay)
+        print ("SubArea=",self.SubArea)
+        print ("EmployeeGroup=",self.EmployeeGroup)
+        print ("WageTypeNum=",self.WageTypeNum)
+        print ("WageTypeText=",self.WageTypeText)
+        print ("DeductionAmy=",self.DeductionAmt)
+        print ("NetId=",self.NetId)
 
         
 #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^a#

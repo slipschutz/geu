@@ -32,7 +32,7 @@ def LoadDeduction(FileName):
     book2 = xlrd.open_workbook(FileName)
     sh1 = book2.sheet_by_index(0)
     
-    print FileName    
+    print (FileName)
     MapForDeductionsList={} #Map from NetID 2 all information found in dues deduction line
     FirstNameLastNameList={}#Map from firstname+lastname to all info
 
@@ -95,7 +95,7 @@ def LoadDeduction(FileName):
             
             #deduction amount line doesn't always look the same 
 
-            for key,value in HeaderMap.iteritems():
+            for key,value in HeaderMap.items():
                 if str(key).find("ded") != -1:
                     #this is the one
                     magicIndex=value
