@@ -46,7 +46,7 @@ class CBU_Line:
 
     def SetValueWithMap(self,HeaderMap,i,v):
         if i not in HeaderMap:
-            print "Error in CBULine: Can't match column",i,"to a feild"
+            print ("Error in CBULine: Can't match column",i,"to a feild")
             throw 
 
         colName=HeaderMap[i]
@@ -115,7 +115,7 @@ class CBU_Line:
         elif colName=="primary_assignment_start_date":
             self.StartDateString=v
         else:
-            print "Error in CBULine: Can't match column",colName,"with known field"
+            print ("Error in CBULine: Can't match column",colName,"with known field")
        
     
     def SetValue(self,i,v):
@@ -182,7 +182,7 @@ class CBU_Line:
         elif i==30:
             self.totTermsAsGrad=v
         else:
-            print "Error in CBU line"
+            print ("Error in CBU line")
 
 
 
