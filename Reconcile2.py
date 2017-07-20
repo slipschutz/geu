@@ -9,13 +9,14 @@ from openpyxl import Workbook
 
 #import xlwt
 
-from CBULine2 import *
-from DeductionLine2 import *
+from CBULine import *
+from DeductionLine import *
 
-import CBULoader2
-import DeductionLoader2
+import CBULoader
+import DeductionLoader
 
 import ReconciledEntry 
+
 
 from os import listdir
 from os.path import isfile, join
@@ -77,6 +78,7 @@ def Reconcile(CBU_File,Dues_File):
     DuesID=DeductionsWrapper.NetIdMap
     CBUID=CBUWrapper.NetIdMap
 
+    
     for netid,info in CBUID.items():
         MapOfAllNetIds[netid]=info
 

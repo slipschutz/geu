@@ -44,13 +44,19 @@ def Reconcile(CBU_File,Dues_File,GuiWindow):
     MapForInCBUButNotInDeductions={}
     ReconciledMap={}
 
-
+    
+    ##Loop over the CBU List Map
     for NetId,CBULine in MapForCBU.items():
-        if NetId in MapForDeductionsList:         #NetId is in both lists
-            #first copy over info from CBULine to ReconciledEntry object
+        #First check to see if this entry is in the dues deduction list
+        if NetId in MapForDeductionsList:         
+            #NetId is in both lists
+
+            #Make a reconciled Entry object
             temp=ReconciledEntry.ReconciledEntry()
+            #first copy over info from CBULine to ReconciledEntry object
             temp.CopyCBUInfo(CBULine)
             temp.CopyDuesInfo(MapForDeductionsList[NetId])
+
             if CBULine.DuesType.lower() != MapForDeductionsList[NetId].Lines[0].WageTypeText.lower():
                 ## CBU Entry needs updating
                 temp.SetValueByTag("UpdatedWageType",MapForDeductionsList[NetId].Lines[0].WageTypeText)
@@ -58,42 +64,17 @@ def Reconcile(CBU_File,Dues_File,GuiWindow):
             else: # does not need updating in the CBU list 
                 temp.SetValueByTag("UpdatedWageType",CBULine.DuesType)
                 temp.SetValueByTag("WasUpdated","no")
-                # CBULine.UpdatedDuesType =CBULine.DuesType
-                # CBULine.WasUpdated="no"
+            
             #now put entry in the MapFor Both Lists 
             ReconciledMap[NetId]=temp
+
         #Entry is in the CBU list but does not have a matching net ID in deductions
-        #Look to see if this CBULine matchs based on last and first name
         else:
-            tempkey="fakefakefake"
-            if CBULine.FirstName != " " and CBULine.LastName!=" ":
-                tempkey = (str(CBULine.FirstName)+str(CBULine.LastName)).strip().lower()
-            if tempkey in FirstNameLastNameList:
-                #This CBU line is in the deductions file but with wrong NETID    
-                temp=ReconciledEntry.ReconciledEntry()
-                temp.CopyCBUInfo(CBULine)
-                duesNetId=FirstNameLastNameList[tempkey].Lines[0].NetId
-                temp.CopyDuesInfo(FirstNameLastNameList[tempkey])
-                temp.SetValueByTag("DuesFileNetId",duesNetId)
-
-                if CBULine.DuesType.lower() != FirstNameLastNameList[tempkey].Lines[0].WageTypeText.lower():
-                    temp.SetValueByTag("UpdatedWageType",\
-                                       FirstNameLastNameList[tempkey].Lines[0].WageTypeText)
-                    temp.SetValueByTag("WasUpdated","yes")
-                else: # does not need updating in the CBU list 
-                    temp.SetValueByTag("UpdatedWageType",CBULine.DuesType)
-                    temp.SetValueByTag("WasUpdated","no")
-
-                #Put the reconciled entry in to the map using the 
-                #net id from the CBU list
-                #which is still going to be unique
-                ReconciledMap[NetId]=temp
-            else:
-                #Entry is really only in the CBU list
-                MapForInCBUButNotInDeductions[NetId]=CBULine
+            MapForInCBUButNotInDeductions[NetId]=CBULine
+            
     endfor=0
 
-    print ("Recondiled SIZE IS ",len(ReconciledMap))
+
 
     ### Do search from the dues list.  Look to see if there are things in here 
     ### That are not in the CBU List
@@ -116,6 +97,7 @@ def Reconcile(CBU_File,Dues_File,GuiWindow):
                pass
            #this is a entry that does not match by net id but DOES match on last/first
            #these entries were already taken care of
+
            
         
 
