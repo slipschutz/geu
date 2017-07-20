@@ -79,8 +79,8 @@ ListOfKnackNames=["Payroll Number","Lastname",
                    "Needs Updating"]
 
 
-from CBULine2 import *
-from DeductionLoader2 import *
+from CBULine import *
+from DeductionLoader import *
 
 class ReconciledEntry:
     def __init__(self):
