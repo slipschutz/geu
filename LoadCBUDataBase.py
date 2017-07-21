@@ -7,7 +7,7 @@ import datetime
 def LoadDataBase(GuiWindow):
     #Find all the files in the deduction data directory
     CBUFileNames = [ f for f in listdir("CBUData") if isfile(join("CBUData",f)) ]
-    print "Loading All CBU files"
+    print ("Loading All CBU files")
     GuiWindow.ui.cbulistWidget.clear()
     GuiWindow.ui.cbulistWidget.setSortingEnabled(True)#sort the suff
     MapForAllCBUFiles={}

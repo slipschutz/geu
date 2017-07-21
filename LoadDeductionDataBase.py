@@ -7,7 +7,7 @@ import datetime
 def LoadDataBase(GuiWindow):
     #Find all the files in the deduction data directory
     deductionFileNames = [ f for f in listdir("DeductionData") if isfile(join("DeductionData",f)) ]
-    print "Loading Entire DataBase"
+    print ("Loading Entire DataBase")
     GuiWindow.ui.listWidget.clear()
     GuiWindow.ui.listWidget.setSortingEnabled(True)#sort the suff
     MapForAllDeductionFiles={}

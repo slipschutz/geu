@@ -8,7 +8,7 @@ import ReconciledEntryLoader
 def LoadDataBase(GuiWindow):
     #Find all the files in the deduction data directory
     FileNames = [ f for f in listdir("ReconciledData") if isfile(join("ReconciledData",f)) ]
-    print "Loading All Reconciled files"
+    print ("Loading All Reconciled files")
     GuiWindow.ui.ReconciledList.clear()
     GuiWindow.ui.ReconciledList.setSortingEnabled(True)#sort the suff
     MapForAllFiles={}

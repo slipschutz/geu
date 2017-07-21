@@ -28,9 +28,9 @@ class MainWindow(QtGui.QMainWindow):
 
 
         self.ui.ReconcileButton.clicked.connect(self.ReconcileButtonClicked)
-        self.DeductionData =LoadDeductionDataBase.LoadDataBase(self)
-        self.CBUData = LoadCBUDataBase.LoadDataBase(self)
-        self.ReconciledData =LoadReconciledDataBase.LoadDataBase(self)
+        self.DeductionData =0#LoadDeductionDataBase.LoadDataBase(self)
+        self.CBUData = 0#LoadCBUDataBase.LoadDataBase(self)
+        self.ReconciledData =0#LoadReconciledDataBase.LoadDataBase(self)
 
         # tempList=[]
         # for date,sheet in self.ReconciledData.iteritems():
@@ -79,7 +79,7 @@ class MainWindow(QtGui.QMainWindow):
 
     end_init=0
     def tabButton(self):
-        print "AHDSSDG"
+        print ("AHDSSDG")
     
     def ItemDoubleClickedInDuesFileList(self,TheItem):
         # print "The Following item was selected"
@@ -93,13 +93,13 @@ class MainWindow(QtGui.QMainWindow):
 
     def RemoveFileButtonClicked(self):
         rowToKill=self.ui.listWidget.currentRow()
-        print "Removing ",rowToKill, " from list"
+        print ("Removing ",rowToKill, " from list")
         self.ui.listWidget.takeItem(rowToKill)
         
     def ReconcileEveryThingButton(self):
         ReconciledFiles="The following files have been reconciled"
-        for dateCBU,aMap in self.CBUData.iteritems():
-            for dateDues,otherMap in self.DeductionData.iteritems():
+        for dateCBU,aMap in self.CBUData.items():
+            for dateDues,otherMap in self.DeductionData.items():
                 if dateDues.year == dateCBU.year and dateDues.month==dateCBU.month:
                     DuesFile = "%d%02d%02d-GEUDues" %(dateDues.year,dateDues.month,dateDues.day)
                     CBUFile = "%d%02d%02d-GEUCBU" %(dateCBU.year,dateCBU.month,dateCBU.day)
@@ -116,7 +116,7 @@ class MainWindow(QtGui.QMainWindow):
         theNetId = theNetId.strip().lower()
         aMap={}
         aList=[]
-        for date, TheMap in self.ReconciledData.iteritems():
+        for date, TheMap in self.ReconciledData.items():
             if theNetId in TheMap:
                 #TheMap[theNetId].PrintShort()
                 aList.append(date)
@@ -132,12 +132,12 @@ class MainWindow(QtGui.QMainWindow):
             theForm="%-16.16s %-8.8s %-10.10s %-7.7s %-5.5s %-5.5s %-5.5s %-5.5s %-8.8s %-8.8s"
 
             headerString = theForm %("Date","WageType","EmployedUnit","PayRate","GAPer","Terms","Group","Amt","OnlyCBU","OnlyDues")
-            print headerString
+            print (headerString)
             self.ui.searchOutputBox.textCursor().insertHtml(headerString)
             for x in aList:
                 dateString=str(x.year)+ "-%02d" % x.month +"-%02d" % x.day
                 infoString=theForm % (str(dateString),str(aMap[x].GetValueByTag("UpdatedWageType")),str(aMap[x].GetValueByTag("EmployUnitName")),str(aMap[x].GetValueByTag("GA_PAY_RATE")),str(aMap[x].GetValueByTag("GA_PERCENTAGE")),str(aMap[x].GetValueByTag("total_ga_terms")),str(aMap[x].GetValueByTag("EmployeeGroup")),str(aMap[x].GetValueByTag("DeductionAmt")),str(aMap[x].GetValueByTag("OnlyInCBU")),str(aMap[x].GetValueByTag("OnlyInDues")))
-                print QString(infoString)
+                print (QString(infoString))
                 
                 self.ui.searchOutputBox.append(infoString)#QString(infoString))
                 #self.ui.searchOutputBox.textCursor().insertHtml('normal text')
