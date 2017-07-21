@@ -5,6 +5,8 @@ import xlrd
 
 from CBULine import *
 
+class CBUWrap:
+    pass
 
 
 def LoadCBU(FileName):
@@ -63,7 +65,13 @@ def LoadCBU(FileName):
 #            print "Name already there", firstLastKey
 #            print "netid ",temp.NetId,FirstLastNameCBU[firstLastKey].NetId
         FirstLastNameCBU[firstLastKey]=temp
-        
-    return NetIdMap,FirstLastNameCBU,MapForEmptyNetIdCBU
+
+
+    ACBUWrap=CBUWrap()
+    ACBUWrap.NetIdMap=NetIdMap
+    ACBUWrap.FirstLastNameMap=FirstLastNameCBU
+    ACBUWrap.EmptyNetId=MapForEmptyNetIdCBU
+    
+    return ACBUWrap
 
 

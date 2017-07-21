@@ -210,7 +210,7 @@ class CBU_Line:
         elif i==10:
             return self.LocalCityName 
         elif i==11:
-            return self.cLocalStateCode 
+            return self.LocalStateCode 
         elif i==12:
             return self.LocalZipCode 
         elif i==13:

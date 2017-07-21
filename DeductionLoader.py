@@ -7,6 +7,8 @@ import datetime
 
 from DeductionLine import *
 
+class DeductionWrap:
+    pass
 
 class PersonInfoFromDeductionFile:
     def __init__(self):
@@ -130,5 +132,8 @@ def LoadDeduction(FileName):
             
     endFor=0
 
-    return MapForDeductionsList,FirstNameLastNameList
+    ADeductionWrap=DeductionWrap()
+    ADeductionWrap.NetIdMap=MapForDeductionsList
+    ADeductionWrap.FirstLstNameMap=FirstNameLastNameList
+    return ADeductionWrap
 
