@@ -4,14 +4,17 @@ import sys
 from PyQt4 import uic, QtGui, QtCore
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+
 import LoadDeductionDataBase
 import LoadCBUDataBase
 import LoadReconciledDataBase
-from os.path import join
 
-import matplotlib.pyplot as plt
+from os import listdir
+from os.path import isfile, join
 
-from Reconcile import Reconcile
+
+
+from Reconcile2 import Reconcile
 # Load the GUI class from the .ui file
 (Ui_MainWindow, QMainWindow) = uic.loadUiType('Test.ui')
 
@@ -27,46 +30,43 @@ class MainWindow(QtGui.QMainWindow):
         self.CBUFileForReconcile="nothing"
 
 
-        self.ui.ReconcileButton.clicked.connect(self.ReconcileButtonClicked)
+
         self.DeductionData =0#LoadDeductionDataBase.LoadDataBase(self)
         self.CBUData = 0#LoadCBUDataBase.LoadDataBase(self)
         self.ReconciledData =0#LoadReconciledDataBase.LoadDataBase(self)
 
-        # tempList=[]
-        # for date,sheet in self.ReconciledData.iteritems():
-        #     tempList.append(date)
-        
-        # aSheet=self.ReconciledData[tempList[0]]
-        # mapOfDeparts={}
-        # for netid,line in sheet.iteritems():
-        #     mapOfDeparts[line.GetValueByTag("EmployUnitName")]=4
-            
-        
-        # tempList.sort()
-        # for depart,nothing in mapOfDeparts.iteritems():
-        #     print depart  
-        #     for x in tempList:
-        #       theSheet=self.ReconciledData[x]
-        #       memberCount=0.0
-        #       totalCount=0.0
-  
-        #       for netid,line in theSheet.iteritems():
-        #           #                print line.GetValueByTag("UpdatedWageType")
-        #           #                if str(line.GetValueByTag("UpdatedWageType")).strip().lower() == "geu dues":
-        #           if line.GetValueByTag("EmployUnitName") == depart:
-        #               if "dues" in str(line.GetValueByTag("UpdatedWageType")).strip().lower():
-        #                   memberCount+=1
-        #               totalCount+=1
-        #       if totalCount==0:
-        #           totalCount=-1
-        #       print x,"   ",memberCount/totalCount,"   ",totalCount
 
+        for f in listdir("DeductionData"):
+            if isfile(join("DeductionData",f)):
+                temp=QListWidgetItem()
+                temp.setText(f)
+                tempFont=QFont()
+                tempFont.setPointSize(16)
+                temp.setFont(tempFont)
+                self.ui.DuesListWidget.addItem(temp)
+
+        for f in listdir("CBUData"):
+            if isfile(join("CBUData",f)):
+                temp=QListWidgetItem()
+                temp.setText(f)
+                tempFont=QFont()
+                tempFont.setPointSize(16)
+                temp.setFont(tempFont)
+                self.ui.CBUListWidget.addItem(temp)
+
+        
+        
 
 
         # Connect a function to be run when a button is pressed.
         self.ui.actionExit.triggered.connect(self.close)
-        self.ui.listWidget.itemDoubleClicked.connect(self.ItemDoubleClickedInDuesFileList)
-        self.ui.cbulistWidget.itemDoubleClicked.connect(self.ItemDoubleClickedInCBUFileList)
+
+        self.ui.DuesListWidget.itemDoubleClicked.connect(self.ItemDoubleClickedInDuesFileList)
+
+        self.ui.ReconcileButton.clicked.connect(self.ReconcileButtonClicked)
+
+        self.ui.CBUListWidget.itemDoubleClicked.connect(self.ItemDoubleClickedInCBUFileList)
+
         
         self.ui.RemoveFileButton.clicked.connect(self.RemoveFileButtonClicked)
 
@@ -87,6 +87,22 @@ class MainWindow(QtGui.QMainWindow):
         self.DuesFileForReconcile=join("DeductionData",str(TheItem.text()))
         self.ui.labelDuesFile.setText(TheItem.text())
 
+        if TheItem.font().bold():
+            tempFont=TheItem.font()
+            tempFont.setBold(False)
+            TheItem.setFont(tempFont)
+        else:
+            tempFont=TheItem.font()
+            tempFont.setBold(True)
+            TheItem.setFont(tempFont)
+
+
+        
+
+  
+
+            
+        
     def ItemDoubleClickedInCBUFileList(self,TheItem):
         self.CBUFileForReconcile=join("CBUData",str(TheItem.text()))
         self.ui.labelCBUFile.setText(TheItem.text())
@@ -186,15 +202,16 @@ class MainWindow(QtGui.QMainWindow):
 
     def ReconcileButtonClicked(self):
         if self.DuesFileForReconcile != "nothing" and self.CBUFileForReconcile !="nothing":
-            Reconcile(self.CBUFileForReconcile,self.DuesFileForReconcile,self)
+            outname=Reconcile(self.CBUFileForReconcile,self.DuesFileForReconcile)
+            self.DisplayMessageWindow(outname+" File Created")
     end_thing=0
 
 
     def DisplayErrorWindow(self,theError):
-        QtGui.QMessageBox.about(self,"caption",QString(theError))
+        QtGui.QMessageBox.about(self,"caption",theError)
 
     def DisplayMessageWindow(self,theText):
-        QtGui.QMessageBox.about(self,"caption",QString(theText))
+        QtGui.QMessageBox.about(self,"caption",theText)
 
 
 

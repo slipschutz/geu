@@ -87,7 +87,6 @@ def Reconcile(CBU_File,Dues_File):
     for netid,info in DuesID.items():
         MapOfAllNetIds[netid]=info
 
-    print("HI")    
 
     for netid, info in MapOfAllNetIds.items():
         if netid in DuesID and netid in CBUID:
@@ -131,7 +130,7 @@ def Reconcile(CBU_File,Dues_File):
     temp4 = temp2.split('.')
 
 
-    dest_filename =join("ReconciledData",temp3[0]+"_"+temp4[0]+".xls")
+    dest_filename =join("ReconciledData",temp3[0]+"_"+temp4[0]+".xlsx")
 
     ws0 = wb.active
     ws0.title = "Reconciled List"
@@ -161,7 +160,8 @@ def Reconcile(CBU_File,Dues_File):
 
     print(dest_filename)
     wb.save(filename = dest_filename)
-    return;
+    
+    return dest_filename
 
 
 
