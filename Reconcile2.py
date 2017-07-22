@@ -4,6 +4,8 @@
 import sys
 sys.path.append("xlwt-0.7.5")
 
+sys.path.append('./.local/lib/python3.4/site-packages/')
+
 
 from openpyxl import Workbook
 
