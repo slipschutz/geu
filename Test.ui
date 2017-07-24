@@ -17,14 +17,14 @@
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>0</x>
       <y>0</y>
-      <width>801</width>
-      <height>531</height>
+      <width>851</width>
+      <height>591</height>
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="Tab1">
      <attribute name="title">
@@ -144,17 +144,246 @@
     </widget>
     <widget class="QWidget" name="tab">
      <attribute name="title">
-      <string>Reconciled Data</string>
+      <string>Annual Reconcilation</string>
      </attribute>
-     <widget class="QListWidget" name="ReconciledList">
+     <widget class="QListWidget" name="SelectedFilesForAnnualRec">
       <property name="geometry">
        <rect>
-        <x>240</x>
-        <y>60</y>
-        <width>256</width>
-        <height>192</height>
+        <x>110</x>
+        <y>250</y>
+        <width>241</width>
+        <height>211</height>
        </rect>
       </property>
+     </widget>
+     <widget class="QWidget" name="verticalLayoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>0</y>
+        <width>636</width>
+        <height>191</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>AFT</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>AFT MI</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="1">
+          <widget class="QLabel" name="label_12">
+           <property name="text">
+            <string>Salary Cut off</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_9">
+           <property name="text">
+            <string>1/8 Time</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="label_13">
+           <property name="text">
+            <string>Member Per Cap</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="5">
+          <widget class="QLabel" name="label_16">
+           <property name="text">
+            <string>Fee Payer per Cap</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>1/4 Time</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_11">
+           <property name="text">
+            <string>Pay Level</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="4">
+          <widget class="QLabel" name="label_15">
+           <property name="text">
+            <string>Member Per Cap</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>1/2 Time</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>Full Time</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QLabel" name="label_14">
+           <property name="text">
+            <string>Fee Payer per Cap</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="FullTime_CutOff"/>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLineEdit" name="HalfTime_CutOff"/>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLineEdit" name="QuarterTime_CutOff"/>
+         </item>
+         <item row="4" column="1">
+          <widget class="QLineEdit" name="EighthTime_CutOff"/>
+         </item>
+         <item row="1" column="2">
+          <widget class="QLineEdit" name="FullTime_AFTMemPerCap"/>
+         </item>
+         <item row="2" column="2">
+          <widget class="QLineEdit" name="HalfTime_AFTMemPerCap"/>
+         </item>
+         <item row="3" column="2">
+          <widget class="QLineEdit" name="QuarterTime_AFTMemPerCap"/>
+         </item>
+         <item row="4" column="2">
+          <widget class="QLineEdit" name="EighthTime_AFTMemPerCap"/>
+         </item>
+         <item row="1" column="3">
+          <widget class="QLineEdit" name="FullTime_AFTFeePerCap"/>
+         </item>
+         <item row="2" column="3">
+          <widget class="QLineEdit" name="HalfTime_AFTFeePerCap"/>
+         </item>
+         <item row="3" column="3">
+          <widget class="QLineEdit" name="QuarterTime_AFTFeePerCap"/>
+         </item>
+         <item row="4" column="3">
+          <widget class="QLineEdit" name="EighthTime_AFTFeePerCap"/>
+         </item>
+         <item row="1" column="4">
+          <widget class="QLineEdit" name="FullTime_AFTMIMemPerCap"/>
+         </item>
+         <item row="2" column="4">
+          <widget class="QLineEdit" name="HalfTime_AFTMIMemPerCap"/>
+         </item>
+         <item row="3" column="4">
+          <widget class="QLineEdit" name="QuarterTime_AFTMIMemPerCap"/>
+         </item>
+         <item row="4" column="4">
+          <widget class="QLineEdit" name="EighthTime_AFTMIMemPerCap"/>
+         </item>
+         <item row="1" column="5">
+          <widget class="QLineEdit" name="FullTime_AFTMIFeePerCap"/>
+         </item>
+         <item row="2" column="5">
+          <widget class="QLineEdit" name="HalfTime_AFTMIFeePerCap"/>
+         </item>
+         <item row="3" column="5">
+          <widget class="QLineEdit" name="QuarterTime_AFTMIFeePerCap"/>
+         </item>
+         <item row="4" column="5">
+          <widget class="QLineEdit" name="EighthTime_AFTMIFeePerCap"/>
+         </item>
+        </layout>
+       </item>
+      </layout>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_2">

@@ -73,7 +73,31 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.ReconcileEveryThingButton.clicked.connect(self.ReconcileEveryThingButton)
         self.ui.SearchLine.editingFinished.connect(self.ASearchWasDone)
 
+        self.ui.FullTime_CutOff.editingFinished.connect(self.UpdatePerCapInfo)
+        self.ui.HalfTime_CutOff.editingFinished.connect(self.UpdatePerCapInfo)
+        self.ui.QuarterTime_CutOff.editingFinished.connect(self.UpdatePerCapInfo)
+        self.ui.EighthTime_CutOff.editingFinished.connect(self.UpdatePerCapInfo)
 
+        self.ui.FullTime_AFTMemPerCap.editingFinished.connect(self.UpdatePerCapInfo)
+        self.ui.HalfTime_AFTMemPerCap.editingFinished.connect(self.UpdatePerCapInfo)
+        self.ui.QuarterTime_AFTMemPerCap.editingFinished.connect(self.UpdatePerCapInfo)
+        self.ui.EighthTime_AFTMemPerCap.editingFinished.connect(self.UpdatePerCapInfo)
+
+        self.ui.FullTime_AFTFeePerCap.editingFinished.connect(self.UpdatePerCapInfo)
+        self.ui.HalfTime_AFTFeePerCap.editingFinished.connect(self.UpdatePerCapInfo)
+        self.ui.QuarterTime_AFTFeePerCap.editingFinished.connect(self.UpdatePerCapInfo)
+        self.ui.EighthTime_AFTFeePerCap.editingFinished.connect(self.UpdatePerCapInfo)
+
+        
+        self.ui.FullTime_AFTMIMemPerCap.editingFinished.connect(self.UpdatePerCapInfo)
+        self.ui.HalfTime_AFTMIMemPerCap.editingFinished.connect(self.UpdatePerCapInfo)
+        self.ui.QuarterTime_AFTMIMemPerCap.editingFinished.connect(self.UpdatePerCapInfo)
+        self.ui.EighthTime_AFTMIMemPerCap.editingFinished.connect(self.UpdatePerCapInfo)
+
+        self.ui.FullTime_AFTMIFeePerCap.editingFinished.connect(self.UpdatePerCapInfo)
+        self.ui.HalfTime_AFTMIFeePerCap.editingFinished.connect(self.UpdatePerCapInfo)
+        self.ui.QuarterTime_AFTMIFeePerCap.editingFinished.connect(self.UpdatePerCapInfo)
+        self.ui.EighthTime_AFTMIFeePerCap.editingFinished.connect(self.UpdatePerCapInfo)
 
 
 
@@ -91,10 +115,34 @@ class MainWindow(QtGui.QMainWindow):
             tempFont=TheItem.font()
             tempFont.setBold(False)
             TheItem.setFont(tempFont)
+            foundItem=self.ui.SelectedFilesForAnnualRec.findItems(TheItem.text(),Qt.MatchExactly)
+            self.ui.SelectedFilesForAnnualRec.takeItem(self.ui.SelectedFilesForAnnualRec.row(foundItem[0]))
+
+            
         else:
             tempFont=TheItem.font()
             tempFont.setBold(True)
             TheItem.setFont(tempFont)
+            
+            newItem=QListWidgetItem(TheItem.text())
+            temp=QFont()
+            temp.setPointSize(16)
+            newItem.setFont(temp)
+            self.ui.SelectedFilesForAnnualRec.addItem(newItem)
+
+
+    def UpdatePerCapInfo(self):
+        print("HI")
+        #self.FullTime_CutOff= float(str(self.ui.FullTime_CutOff.text()))
+        PayLevels=["FullTime","HalfTime","QuarterTime","EighthTime"]
+        Things=["CutOff","AFTMemPerCap","AFTFeePerCap","AFTMIMemPerCap","AFTMIFeePerCap"]
+        for p in PayLevels:
+            for th in Things:
+                s="{0}_{1}".format(p,th)
+                x=getattr(self.ui,s)
+                if x.text() != "":
+                    setattr(self,s,float(x.text()))
+                
 
 
         
