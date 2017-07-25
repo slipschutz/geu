@@ -12,7 +12,7 @@ import LoadReconciledDataBase
 from os import listdir
 from os.path import isfile, join
 
-
+from AnnualReconcilliation import *
 
 from Reconcile2 import Reconcile
 # Load the GUI class from the .ui file
@@ -73,6 +73,10 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.ReconcileEveryThingButton.clicked.connect(self.ReconcileEveryThingButton)
         self.ui.SearchLine.editingFinished.connect(self.ASearchWasDone)
 
+
+        self.ui.FullTime_CutOff.setText("333")
+
+        
         self.ui.FullTime_CutOff.editingFinished.connect(self.UpdatePerCapInfo)
         self.ui.HalfTime_CutOff.editingFinished.connect(self.UpdatePerCapInfo)
         self.ui.QuarterTime_CutOff.editingFinished.connect(self.UpdatePerCapInfo)
@@ -100,8 +104,24 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.EighthTime_AFTMIFeePerCap.editingFinished.connect(self.UpdatePerCapInfo)
 
 
+        self.ui.runAnnualRec.clicked.connect(self.RunAnnualRec)
+
+        self.ThePerCapParameters=PerCapParameters()
 
     end_init=0
+
+    def RunAnnualRec(self):
+        #Make a python list of strings from the
+        #QListWidget
+        num =len(self.ui.SelectedFilesForAnnualRec)
+        self.ui.SelectedFilesForAnnualRec.sortItems()
+        theList=[]
+        for i in range(0,num):
+            item=self.ui.SelectedFilesForAnnualRec.item(i)
+            theList.append(item.text())
+
+        DoAnnualReconcilliation(theList,self.ThePerCapParameters)
+    
     def tabButton(self):
         print ("AHDSSDG")
     
@@ -141,7 +161,7 @@ class MainWindow(QtGui.QMainWindow):
                 s="{0}_{1}".format(p,th)
                 x=getattr(self.ui,s)
                 if x.text() != "":
-                    setattr(self,s,float(x.text()))
+                    setattr(self.ThePerCapParameters,s,float(x.text()))
                 
 
 

@@ -11,14 +11,27 @@ from os.path import isfile, join
 import datetime
 
 
-def DoAnnualReconcilliation():
+class PerCapParameters:
+    def __init__(self):
+        PayLevels=["FullTime","HalfTime","QuarterTime","EighthTime"]
+        Things=["CutOff","AFTMemPerCap","AFTFeePerCap","AFTMIMemPerCap","AFTMIFeePerCap"]
+        for p in PayLevels:
+            for th in Things:
+                s="{0}_{1}".format(p,th)
+                setattr(self,s,0)
 
-    beginDate=datetime.datetime.strptime("2016-09-06","%Y-%m-%d")
-    endDate=datetime.datetime.strptime("2017-06-01","%Y-%m-%d")
 
 
-
-    deductionFileNames = [ f for f in listdir("DeductionData") if isfile(join("DeductionData",f)) ]
+def DoAnnualReconcilliation(deductionFileNames,TheParams):
+    # PayLevels=["FullTime","HalfTime","QuarterTime","EighthTime"]
+    # Things=["CutOff","AFTMemPerCap","AFTFeePerCap","AFTMIMemPerCap","AFTMIFeePerCap"]
+    # for p in PayLevels:
+    #     for th in Things:
+    #         s="{0}_{1}".format(p,th)
+    #         print(s,getattr(TheParams,s))
+    # print("----")
+    
+    # return
 
     MapForAllDeductionFiles={}
     for i in deductionFileNames:
@@ -26,9 +39,8 @@ def DoAnnualReconcilliation():
         datePart=splitName[0].strip()
 
         dateTemp=datetime.datetime.strptime(datePart,"%Y%m%d")
-        if (dateTemp > beginDate and dateTemp<endDate):
-            DeductionWrap=DeductionLoader.LoadDeduction(join("DeductionData",i))
-            MapForAllDeductionFiles[dateTemp.date()]=DeductionWrap
+        DeductionWrap=DeductionLoader.LoadDeduction(join("DeductionData",i))
+        MapForAllDeductionFiles[dateTemp]=DeductionWrap
             
 
     print ("Number Of Deduction Files",len(MapForAllDeductionFiles))
@@ -51,10 +63,10 @@ def DoAnnualReconcilliation():
 
     print("Size of Salary totals", len(SalaryTotals))
 
-    FullCutOff=35537.
-    HalfCutOff=14626.
-    QuarterCutOff=8880.
-    EighthCutOff=0.
+    FullCutOff=TheParams.FullTime_CutOff
+    HalfCutOff=TheParams.HalfTime_CutOff
+    QuarterCutOff=TheParams.QuarterTime_CutOff
+    EighthCutOff=TheParams.EighthTime_CutOff
 
 
     FullTimeMap={}
@@ -73,13 +85,23 @@ def DoAnnualReconcilliation():
             EighthTimeMap[netid]=Total
 
 
-    FullDuesAFT=18.23
-    HalfDuesAFT=9.12
-    QuarterDuesAFT=4.56
-    EighthDuesAFT=2.28
+    FullDuesAFT=TheParams.FullTime_AFTMemPerCap
+    HalfDuesAFT=TheParams.HalfTime_AFTMemPerCap
+    QuarterDuesAFT=TheParams.QuarterTime_AFTMemPerCap
+    EighthDuesAFT=TheParams.EighthTime_AFTMemPerCap
 
-    
+
+    monthChecker={}
+
+    orderedDateList=[]
     for date,DedWrap in MapForAllDeductionFiles.items():
+        orderedDateList.append(date)
+
+    orderedDateList= sorted(orderedDateList)
+
+    total=0
+    for date in orderedDateList:
+        DedWrap=MapForAllDeductionFiles[date]
         NumFull=0
         NumHalf=0
         NumQuarter=0
@@ -95,11 +117,15 @@ def DoAnnualReconcilliation():
             elif netid in EighthTimeMap:
                 NumEighth=NumEighth+1
         
-
-        Orig = (NumFull +NumHalf+NumQuarter+NumEighth)*QuarterDuesAFT
-        New = NumFull*FullDuesAFT+NumHalf*HalfDuesAFT + NumQuarter*QuarterDuesAFT + NumEighth*EighthDuesAFT
-        print(date,"Full ",NumFull,"Half",NumHalf,"Quarter",NumQuarter,"Eighth",NumEighth,"Orig {0:5.2f}".format(Orig)," new {0:5.2f}".format(New))
-
+        month=date.month 
+        if month not in monthChecker:
+            monthChecker[month]=1
+        elif monthChecker[month]==1:
+            monthChecker[month]=2
+            Orig = (NumFull +NumHalf+NumQuarter+NumEighth)*QuarterDuesAFT
+            New = NumFull*FullDuesAFT+NumHalf*HalfDuesAFT + NumQuarter*QuarterDuesAFT + NumEighth*EighthDuesAFT
+            print(date,"Full ",NumFull,"Half",NumHalf,"Quarter",NumQuarter,"Eighth",NumEighth,"Orig {0:5.2f}".format(Orig)," new {0:5.2f}".format(New))
+            total=total+(new-Orig)
 
     
 if __name__=='__main__':
