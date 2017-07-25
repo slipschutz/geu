@@ -10,8 +10,8 @@ from os import listdir
 from os.path import isfile, join
 import datetime
 
-########            if str(dateTemp.date()).strip() == "2016-11-23" or str(dateTemp.date()).strip() == "2017-05-31":
-def Test():
+
+def DoAnnualReconcilliation():
 
     beginDate=datetime.datetime.strptime("2016-09-06","%Y-%m-%d")
     endDate=datetime.datetime.strptime("2017-06-01","%Y-%m-%d")
