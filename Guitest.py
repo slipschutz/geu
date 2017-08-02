@@ -74,7 +74,32 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.SearchLine.editingFinished.connect(self.ASearchWasDone)
 
 
-        self.ui.FullTime_CutOff.setText("333")
+        self.ui.FullTime_CutOff.setText("37642")
+        self.ui.HalfTime_CutOff.setText("15157")
+        self.ui.QuarterTime_CutOff.setText("9203")
+        self.ui.EighthTime_CutOff.setText("0")
+
+        self.ui.FullTime_AFTMemPerCap.setText("19.03")
+        self.ui.HalfTime_AFTMemPerCap.setText("9.52")
+        self.ui.QuarterTime_AFTMemPerCap.setText("4.62")
+        self.ui.EighthTime_AFTMemPerCap.setText("2.38")
+
+        self.ui.FullTime_AFTFeePerCap.setText("13.98")
+        self.ui.HalfTime_AFTFeePerCap.setText("6.99")
+        self.ui.QuarterTime_AFTFeePerCap.setText("3.50")
+        self.ui.EighthTime_AFTFeePerCap.setText("1.75")
+
+
+        self.ui.FullTime_AFTMIMemPerCap.setText("18.45")
+        self.ui.HalfTime_AFTMIMemPerCap.setText("9.23")
+        self.ui.QuarterTime_AFTMIMemPerCap.setText("4.62")
+        self.ui.EighthTime_AFTMIMemPerCap.setText("4.62")
+        
+        self.ui.FullTime_AFTMIFeePerCap.setText("16.22")
+        self.ui.HalfTime_AFTMIFeePerCap.setText("8.11")
+        self.ui.QuarterTime_AFTMIFeePerCap.setText("4.06")
+        self.ui.EighthTime_AFTMIFeePerCap.setText("4.06")
+
 
         
         self.ui.FullTime_CutOff.editingFinished.connect(self.UpdatePerCapInfo)
@@ -107,7 +132,7 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.runAnnualRec.clicked.connect(self.RunAnnualRec)
 
         self.ThePerCapParameters=PerCapParameters()
-
+        self.UpdatePerCapInfo()
     end_init=0
 
     def RunAnnualRec(self):
