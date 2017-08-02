@@ -140,10 +140,15 @@ def DoAnnualReconcilliation(deductionFileNames,TheParams):
                 tempDeduction=tempDeduction+line.DeductionAmt
 
             if info.Lines[0].WageTypeText=="GEU Dues":
-                if netid in SalaryTotals:
-                    SalaryTotals[netid]=SalaryTotals[netid]+tempDeduction/0.016
+                if date.date()=="2017-02-03":
+                    rate=0.016*2
                 else:
-                    SalaryTotals[netid]=tempDeduction/0.016
+                    rate=0.016
+                    
+                if netid in SalaryTotals:
+                    SalaryTotals[netid]=SalaryTotals[netid]+tempDeduction/rate
+                else:
+                    SalaryTotals[netid]=tempDeduction/rate
 
     print("Size of Salary totals", len(SalaryTotals))
 

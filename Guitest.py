@@ -133,6 +133,8 @@ class MainWindow(QtGui.QMainWindow):
 
         self.ThePerCapParameters=PerCapParameters()
         self.UpdatePerCapInfo()
+
+
     end_init=0
 
     def RunAnnualRec(self):
