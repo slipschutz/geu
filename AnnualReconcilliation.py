@@ -129,6 +129,7 @@ def DoAnnualReconcilliation(deductionFileNames,TheParams):
 
     print ("Number Of Deduction Files",len(MapForAllDeductionFiles))
     SalaryTotals={}
+    SalaryTotalsFees={}
 
     for date,DedWrap in MapForAllDeductionFiles.items():
         for netid,info in DedWrap.NetIdMap.items():
@@ -138,22 +139,45 @@ def DoAnnualReconcilliation(deductionFileNames,TheParams):
             tempDeduction=0
             for line in info.Lines:
                 tempDeduction=tempDeduction+line.DeductionAmt
+                
+
+            if date.date()=="2017-02-03":
+                factor=2
+            else:
+                factor=1
 
             if info.Lines[0].WageTypeText=="GEU Dues":
-                if date.date()=="2017-02-03":
-                    rate=0.016*2
-                else:
-                    rate=0.016
-                    
+                rate=0.016*factor
                 if netid in SalaryTotals:
                     SalaryTotals[netid]=SalaryTotals[netid]+tempDeduction/rate
                 else:
                     SalaryTotals[netid]=tempDeduction/rate
 
+            elif info.Lines[0].WageTypeText=="GEU Fees-C":
+                rate=0.0144*factor
+                if netid in SalaryTotalsFees:
+                    SalaryTotalsFees[netid]=SalaryTotalsFees[netid]+tempDeduction/rate
+                else:
+                    SalaryTotalsFees[netid]=tempDeduction/rate
+
+                    
     print("Size of Salary totals", len(SalaryTotals))
+    print("Size of Salary totals fees", len(SalaryTotalsFees))
 
     ProcessSalaryList(SalaryTotals,TheParams,MapForAllDeductionFiles,"Mem")
+    ProcessSalaryList(SalaryTotalsFees,TheParams,MapForAllDeductionFiles,"Fee")
     return
+
+
+
+
+
+
+
+
+
+
+
 
 
 

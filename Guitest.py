@@ -61,14 +61,19 @@ class MainWindow(QtGui.QMainWindow):
         # Connect a function to be run when a button is pressed.
         self.ui.actionExit.triggered.connect(self.close)
 
+        self.ui.DuesListWidget.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
         self.ui.DuesListWidget.itemDoubleClicked.connect(self.ItemDoubleClickedInDuesFileList)
+        self.ui.ToggleButton.clicked.connect(self.ToggleButtonClicked)
 
+
+        
         self.ui.ReconcileButton.clicked.connect(self.ReconcileButtonClicked)
+        
 
         self.ui.CBUListWidget.itemDoubleClicked.connect(self.ItemDoubleClickedInCBUFileList)
 
         
-        self.ui.RemoveFileButton.clicked.connect(self.RemoveFileButtonClicked)
+
 
         self.ui.ReconcileEveryThingButton.clicked.connect(self.ReconcileEveryThingButton)
         self.ui.SearchLine.editingFinished.connect(self.ASearchWasDone)
@@ -135,8 +140,16 @@ class MainWindow(QtGui.QMainWindow):
         self.UpdatePerCapInfo()
 
 
+        
     end_init=0
+    def ToggleButtonClicked(self):
+        for i in range(0,self.ui.DuesListWidget.count()):
+            item=self.ui.DuesListWidget.item(i)
+            if self.ui.DuesListWidget.isItemSelected(item):
+                self.ProcessDuesClick(item)
 
+        
+            
     def RunAnnualRec(self):
         #Make a python list of strings from the
         #QListWidget
@@ -151,21 +164,14 @@ class MainWindow(QtGui.QMainWindow):
     
     def tabButton(self):
         print ("AHDSSDG")
-    
-    def ItemDoubleClickedInDuesFileList(self,TheItem):
-        # print "The Following item was selected"
-        # print TheItem.text()
-        self.DuesFileForReconcile=join("DeductionData",str(TheItem.text()))
-        self.ui.labelDuesFile.setText(TheItem.text())
 
+    def ProcessDuesClick(self,TheItem):
         if TheItem.font().bold():
             tempFont=TheItem.font()
             tempFont.setBold(False)
             TheItem.setFont(tempFont)
             foundItem=self.ui.SelectedFilesForAnnualRec.findItems(TheItem.text(),Qt.MatchExactly)
             self.ui.SelectedFilesForAnnualRec.takeItem(self.ui.SelectedFilesForAnnualRec.row(foundItem[0]))
-
-            
         else:
             tempFont=TheItem.font()
             tempFont.setBold(True)
@@ -177,6 +183,15 @@ class MainWindow(QtGui.QMainWindow):
             newItem.setFont(temp)
             self.ui.SelectedFilesForAnnualRec.addItem(newItem)
 
+        
+        
+    def ItemDoubleClickedInDuesFileList(self,TheItem):
+        # print "The Following item was selected"
+        # print TheItem.text()
+        self.DuesFileForReconcile=join("DeductionData",str(TheItem.text()))
+        self.ui.labelDuesFile.setText(TheItem.text())
+        self.ProcessDuesClick(TheItem)
+        
 
     def UpdatePerCapInfo(self):
         print("HI")
@@ -202,10 +217,6 @@ class MainWindow(QtGui.QMainWindow):
         self.CBUFileForReconcile=join("CBUData",str(TheItem.text()))
         self.ui.labelCBUFile.setText(TheItem.text())
 
-    def RemoveFileButtonClicked(self):
-        rowToKill=self.ui.listWidget.currentRow()
-        print ("Removing ",rowToKill, " from list")
-        self.ui.listWidget.takeItem(rowToKill)
         
     def ReconcileEveryThingButton(self):
         ReconciledFiles="The following files have been reconciled"

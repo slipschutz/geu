@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>846</width>
-    <height>619</height>
+    <width>817</width>
+    <height>567</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,81 +19,22 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>851</width>
-      <height>591</height>
+      <width>821</width>
+      <height>541</height>
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="Tab1">
      <attribute name="title">
       <string>Raw Data</string>
      </attribute>
-     <widget class="QListWidget" name="CBUListWidget">
-      <property name="geometry">
-       <rect>
-        <x>360</x>
-        <y>50</y>
-        <width>321</width>
-        <height>281</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="labelForCBUList">
-      <property name="geometry">
-       <rect>
-        <x>400</x>
-        <y>10</y>
-        <width>151</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Loaded CBU Files</string>
-      </property>
-     </widget>
-     <widget class="QListWidget" name="DuesListWidget">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>50</y>
-        <width>311</width>
-        <height>281</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="labelForDuesList">
-      <property name="geometry">
-       <rect>
-        <x>30</x>
-        <y>10</y>
-        <width>151</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Loaded Dues Deductions Files</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="RemoveFileButton">
-      <property name="geometry">
-       <rect>
-        <x>200</x>
-        <y>20</y>
-        <width>121</width>
-        <height>23</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Remove File</string>
-      </property>
-     </widget>
      <widget class="QPushButton" name="ReconcileEveryThingButton">
       <property name="geometry">
        <rect>
-        <x>280</x>
-        <y>370</y>
+        <x>240</x>
+        <y>470</y>
         <width>151</width>
         <height>24</height>
        </rect>
@@ -102,44 +43,65 @@
        <string>Reconcile Everything</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="ReconcileButton">
+     <widget class="QWidget" name="gridLayoutWidget_2">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>420</y>
-        <width>83</width>
-        <height>24</height>
+        <x>6</x>
+        <y>6</y>
+        <width>801</width>
+        <height>411</height>
        </rect>
       </property>
-      <property name="text">
-       <string>Reconcile</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="labelDuesFile">
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>420</y>
-        <width>201</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Nothing Selected</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="labelCBUFile">
-      <property name="geometry">
-       <rect>
-        <x>370</x>
-        <y>420</y>
-        <width>201</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Nothing Selected</string>
-      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="2">
+        <widget class="QLabel" name="labelForCBUList">
+         <property name="text">
+          <string>Loaded CBU Files</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QListWidget" name="CBUListWidget"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QListWidget" name="DuesListWidget"/>
+       </item>
+       <item row="10" column="1">
+        <widget class="QPushButton" name="ReconcileButton">
+         <property name="text">
+          <string>Reconcile</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="labelForDuesList">
+         <property name="text">
+          <string>Loaded Dues Deductions Files</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="2">
+        <widget class="QLabel" name="labelCBUFile">
+         <property name="text">
+          <string>Nothing Selected</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="0">
+        <widget class="QLabel" name="labelDuesFile">
+         <property name="text">
+          <string>Nothing Selected</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QPushButton" name="ToggleButton">
+         <property name="text">
+          <string>Toggle Highlighted</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </widget>
     <widget class="QWidget" name="tab">
@@ -457,7 +419,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>846</width>
+     <width>817</width>
      <height>22</height>
     </rect>
    </property>
