@@ -7,7 +7,7 @@
 
 import DeductionLoader
 from os import listdir
-from os.path import isfile, join
+from os.path import isfile, join, basename
 import datetime
 
 
@@ -22,7 +22,7 @@ class PerCapParameters:
 
 
 
-def ProcessSalaryList(SalaryTotals,TheParams,MapForAllDeductionFiles,theName):
+def ProcessSalaryList(SalaryTotals,TheParams,MapForAllDeductionFiles,theName,SkipList,DoubleList):
 
     FullCutOff=TheParams.FullTime_CutOff
     HalfCutOff=TheParams.HalfTime_CutOff
@@ -59,16 +59,36 @@ def ProcessSalaryList(SalaryTotals,TheParams,MapForAllDeductionFiles,theName):
             EighthTimeMap[netid]=Total
 
 
+    SkipListReFormated=[]
+    for i in SkipList:
+        Dues_File_Temp=basename(i)
+        splitName=Dues_File_Temp.split("-")
+        datePart=splitName[0].strip()
+        dateTemp=datetime.datetime.strptime(datePart,"%Y%m%d").date()
+        SkipListReFormated.append(dateTemp)
+
+    DoubleListReFormated=[]
+    for i in DoubleList:
+        Dues_File_Temp=basename(i)
+        splitName=Dues_File_Temp.split("-")
+        datePart=splitName[0].strip()
+        dateTemp=datetime.datetime.strptime(datePart,"%Y%m%d").date()
+        DoubleListReFormated.append(dateTemp)
 
 
     monthChecker={}
-
     orderedDateList=[]
     for date,DedWrap in MapForAllDeductionFiles.items():
-        orderedDateList.append(date)
+        if date.date()  in SkipListReFormated:
+            orderedDateList.append(date)
+            if date.date()  in DoubleListReFormated:
+                orderedDateList.append(date)
+        
+            
 
     orderedDateList= sorted(orderedDateList)
 
+    print("Date","Full","Half","Quarter","Eighth","Total-People","Orig-AFT-Dues","New-AFT-Dues","Orig-AFTMI-Dues","New-AFTMI-Dues")
     total=0
     for date in orderedDateList:
         DedWrap=MapForAllDeductionFiles[date]
@@ -88,25 +108,24 @@ def ProcessSalaryList(SalaryTotals,TheParams,MapForAllDeductionFiles,theName):
                 NumEighth=NumEighth+1
         
         month=date.month 
-        if month not in monthChecker:
-            monthChecker[month]=1
-        elif monthChecker[month]==1:
-            monthChecker[month]=2
-            totalNumberOfPeople=(NumFull +NumHalf+NumQuarter+NumEighth)
-            Orig = totalNumberOfPeople*QuarterRateAFT
-            New = NumFull*FullRateAFT+  NumHalf*HalfRateAFT +   NumQuarter*QuarterRateAFT +   NumEighth*EighthRateAFT
-            OrigMI = totalNumberOfPeople*QuarterRateAFTMI
-            NewMI = NumFull*FullRateAFTMI+  NumHalf*HalfRateAFTMI +   NumQuarter*QuarterRateAFTMI +   NumEighth*EighthRateAFTMI
+        totalNumberOfPeople=(NumFull +NumHalf+NumQuarter+NumEighth)
+        Orig = totalNumberOfPeople*QuarterRateAFT
+        New = NumFull*FullRateAFT+  NumHalf*HalfRateAFT +   NumQuarter*QuarterRateAFT +   NumEighth*EighthRateAFT
+        OrigMI = totalNumberOfPeople*QuarterRateAFTMI
+        NewMI = NumFull*FullRateAFTMI+  NumHalf*HalfRateAFTMI +   NumQuarter*QuarterRateAFTMI +   NumEighth*EighthRateAFTMI
 
-            print(date,"Full ",NumFull,"Half",NumHalf,"Quarter",NumQuarter,"Eighth",NumEighth,"totPeps",totalNumberOfPeople,"Orig {0:5.2f}".format(Orig)," new {0:5.2f}".format(New),"OrigMI {0:5.2f}".format(OrigMI),"new MI {0:5.2f}".format(NewMI))
+        print(str(date.date()),NumFull,NumHalf,NumQuarter,NumEighth,totalNumberOfPeople,"{0:5.2f}".format(Orig),"{0:5.2f}".format(New),"{0:5.2f}".format(OrigMI),"{0:5.2f}".format(NewMI))
 
+        '''
+        print(date,"Full ",NumFull,"Half",NumHalf,"Quarter",NumQuarter,"Eighth",NumEighth,"totPeps",totalNumberOfPeople,"Orig {0:5.2f}".format(Orig)," new {0:5.2f}".format(New),"OrigMI {0:5.2f}".format(OrigMI),"new MI {0:5.2f}".format(NewMI))
+'''
 
-            total=total+(New-Orig) +(NewMI-OrigMI)
+        total=total+(New-Orig) +(NewMI-OrigMI)
 
     print (total)
     
 
-def DoAnnualReconcilliation(deductionFileNames,TheParams):
+def DoAnnualReconcilliation(deductionFileNames,TheParams,SkipList,DoubleList):
     # PayLevels=["FullTime","HalfTime","QuarterTime","EighthTime"]
     # Things=["CutOff","AFTMemPerCap","AFTFeePerCap","AFTMIMemPerCap","AFTMIFeePerCap"]
     # for p in PayLevels:
@@ -139,22 +158,22 @@ def DoAnnualReconcilliation(deductionFileNames,TheParams):
             tempDeduction=0
             for line in info.Lines:
                 tempDeduction=tempDeduction+line.DeductionAmt
-                
 
-            if date.date()=="2017-02-03":
-                factor=2
-            else:
-                factor=1
-
+         
+            if str(date.date())=="2016-09-02":
+                tempDeduction=tempDeduction*(5/14)
+            if str(date.date())=="2017-06-09":
+                stempDeduction=tempDeduction*(2/14)
+            
             if info.Lines[0].WageTypeText=="GEU Dues":
-                rate=0.016*factor
+                rate=0.016
                 if netid in SalaryTotals:
                     SalaryTotals[netid]=SalaryTotals[netid]+tempDeduction/rate
                 else:
                     SalaryTotals[netid]=tempDeduction/rate
 
             elif info.Lines[0].WageTypeText=="GEU Fees-C":
-                rate=0.0144*factor
+                rate=0.0144
                 if netid in SalaryTotalsFees:
                     SalaryTotalsFees[netid]=SalaryTotalsFees[netid]+tempDeduction/rate
                 else:
@@ -164,8 +183,8 @@ def DoAnnualReconcilliation(deductionFileNames,TheParams):
     print("Size of Salary totals", len(SalaryTotals))
     print("Size of Salary totals fees", len(SalaryTotalsFees))
 
-    ProcessSalaryList(SalaryTotals,TheParams,MapForAllDeductionFiles,"Mem")
-    ProcessSalaryList(SalaryTotalsFees,TheParams,MapForAllDeductionFiles,"Fee")
+    ProcessSalaryList(SalaryTotals,TheParams,MapForAllDeductionFiles,"Mem",SkipList,DoubleList)
+    ProcessSalaryList(SalaryTotalsFees,TheParams,MapForAllDeductionFiles,"Fee",SkipList,DoubleList)
     return
 
 

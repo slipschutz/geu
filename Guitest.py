@@ -72,7 +72,7 @@ class MainWindow(QtGui.QMainWindow):
 
         self.ui.CBUListWidget.itemDoubleClicked.connect(self.ItemDoubleClickedInCBUFileList)
 
-        
+        self.ui.SelectedFilesForAnnualRec.itemDoubleClicked.connect(self.SelectedFilesClicked)
 
 
         self.ui.ReconcileEveryThingButton.clicked.connect(self.ReconcileEveryThingButton)
@@ -139,9 +139,35 @@ class MainWindow(QtGui.QMainWindow):
         self.ThePerCapParameters=PerCapParameters()
         self.UpdatePerCapInfo()
 
+        self.DatesToSkip=[]
+        self.DatesToDouble=[]
 
         
     end_init=0
+
+    def SelectedFilesClicked(self,TheItem):
+        if self.ui.skipButton.isChecked():
+            if TheItem.font().bold():
+                tempFont=TheItem.font()
+                tempFont.setBold(False)
+                TheItem.setFont(tempFont)
+                self.DatesToSkip.remove(TheItem.text())
+            else:
+                tempFont=TheItem.font()
+                tempFont.setBold(True)
+                TheItem.setFont(tempFont)
+                self.DatesToSkip.append(TheItem.text())
+        elif self.ui.doubleButton.isChecked():
+            if TheItem.backgroundColor()==QColor("yellow"):
+                temp=QColor("white")
+                TheItem.setBackgroundColor(temp)
+                self.DatesToDouble.remove(TheItem.text())
+            else:
+                temp=QColor("yellow")
+                TheItem.setBackgroundColor(temp)
+                self.DatesToDouble.append(TheItem.text())
+
+    
     def ToggleButtonClicked(self):
         for i in range(0,self.ui.DuesListWidget.count()):
             item=self.ui.DuesListWidget.item(i)
@@ -160,10 +186,8 @@ class MainWindow(QtGui.QMainWindow):
             item=self.ui.SelectedFilesForAnnualRec.item(i)
             theList.append(item.text())
 
-        DoAnnualReconcilliation(theList,self.ThePerCapParameters)
+        DoAnnualReconcilliation(theList,self.ThePerCapParameters,self.DatesToSkip,self.DatesToDouble)
     
-    def tabButton(self):
-        print ("AHDSSDG")
 
     def ProcessDuesClick(self,TheItem):
         if TheItem.font().bold():
@@ -182,6 +206,18 @@ class MainWindow(QtGui.QMainWindow):
             temp.setPointSize(16)
             newItem.setFont(temp)
             self.ui.SelectedFilesForAnnualRec.addItem(newItem)
+        self.ui.SelectedFilesForAnnualRec.sortItems()
+
+    def ProcessAnnualRecClick(self,TheItem):
+        if TheItem.font().bold():
+            tempFont=TheItem.font()
+            tempFont.setBold(False)
+            TheItem.setFont(tempFont)
+        else:
+            tempFont=TheItem.font()
+            tempFont.setBold(True)
+            TheItem.setFont(tempFont)
+
 
         
         

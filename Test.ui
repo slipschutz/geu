@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="Tab1">
      <attribute name="title">
@@ -360,30 +360,30 @@
        <string>Run</string>
       </property>
      </widget>
-     <widget class="QRadioButton" name="radioButton">
+     <widget class="QRadioButton" name="skipButton">
       <property name="geometry">
        <rect>
-        <x>166</x>
+        <x>120</x>
         <y>220</y>
-        <width>111</width>
+        <width>91</width>
         <height>20</height>
        </rect>
       </property>
       <property name="text">
-       <string>Selection</string>
+       <string>Skip Selection</string>
       </property>
      </widget>
-     <widget class="QRadioButton" name="radioButton_2">
+     <widget class="QRadioButton" name="doubleButton">
       <property name="geometry">
        <rect>
-        <x>250</x>
+        <x>280</x>
         <y>220</y>
         <width>111</width>
         <height>21</height>
        </rect>
       </property>
       <property name="text">
-       <string>Other Selection</string>
+       <string>Double Selection</string>
       </property>
      </widget>
     </widget>
