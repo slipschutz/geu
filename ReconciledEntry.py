@@ -1,5 +1,5 @@
 
-ListOfColumnNames=["number","Lastname",
+ListOfColumnNames=["Lastname",
                    "Firstname",
                    "Email",
                    "GA_SALARY_LEVEL",
@@ -38,7 +38,7 @@ ListOfColumnNames=["number","Lastname",
                    "OnlyInDues",
                    "Date"]
 
-ListOfKnackNames=["Payroll Number","Lastname",
+ListOfKnackNames=["Lastname",
                    "Firstname",
                    "MSU Email",
                    "Salary Level",
@@ -100,6 +100,7 @@ class ReconciledEntry:
 
     def SetValueByIndex(self,i,v):
         if i < len(ListOfColumnNames):
+#            print("Setting the value",v," in ",ListOfColumnNames[i])
             self.theStuff[ListOfColumnNames[i]]=v
         else:
             print ("can't set index ",i," in ReconciedEntry")
@@ -122,9 +123,11 @@ class ReconciledEntry:
             
     def CopyCBUInfo(self,CBUInfo):
         for i in range(NumberOfColumnsInCBU):
-            #print("I is",i,"cbu value ",CBUInfo.GetValue(i), "colum name ",ListOfColumnNames[i])
+#            print("I is",i,"cbu value ",CBUInfo.GetValue(i), "colum name ",ListOfColumnNames[i])
             self.SetValueByIndex(i,CBUInfo.GetValue(i))
 
+
+            
 
     def CopyDuesInfo(self,DUESInfo):
         self.DuesPersonInfo=DUESInfo

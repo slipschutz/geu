@@ -56,7 +56,7 @@ def AttemptCBUEmployeeNumberRecovery(CBUNetId,DeductionNetId):
             
 
 def Reconcile(CBU_File,Dues_File):
-    print("HI")
+
  
     CBUWrapper=  CBULoader.LoadCBU(CBU_File) 
     DeductionsWrapper= DeductionLoader.LoadDeduction(Dues_File)
@@ -82,9 +82,18 @@ def Reconcile(CBU_File,Dues_File):
 
     
     for netid,info in CBUID.items():
+        if "fees" in info.DuesWageType.lower().strip():
+            info.DuesWageType="GEU Fees-C"
+        if "dues" in info.DuesWageType.lower().strip():
+            info.DuesWageType="GEU Dues"
         MapOfAllNetIds[netid]=info
 
     for netid,info in DuesID.items():
+        for line in info.Lines:
+            if "fees" in line.WageTypeText.lower().strip():
+                line.WageTypeText="GEU Fees-C"
+            if "dues" in line.WageTypeText.lower().strip():
+                line.WageTypeText="GEU Dues"
         MapOfAllNetIds[netid]=info
 
 
@@ -98,11 +107,13 @@ def Reconcile(CBU_File,Dues_File):
             temp.CopyDuesInfo(DuesInfo)
 
             if CBUInfo.DuesWageType.lower() != DuesInfo.Lines[0].WageTypeText.lower():
+
                 ## CBU Entry needs updating
                 temp.SetValueByTag("UpdatedWageType",DuesInfo.Lines[0].WageTypeText)
                 temp.SetValueByTag("WasUpdated","yes")
 
-            else: # does not need updating in the CBU list 
+            else: # does not need updating in the CBU list
+
                 temp.SetValueByTag("UpdatedWageType",CBUInfo.DuesWageType)
                 temp.SetValueByTag("WasUpdated","no")
                 # CBULine.UpdatedDuesType =CBULine.DuesType
@@ -110,17 +121,24 @@ def Reconcile(CBU_File,Dues_File):
             #now put entry in the MapFor Both Lists 
             ReconciledMap[netid]=temp
         elif netid in DuesID and netid not in CBUID:
+
             DuesInfo=DuesID[netid]
             temp=ReconciledEntry.ReconciledEntry()
             temp.CopyDuesInfo(DuesInfo)
             temp.SetValueByTag("MSUNETID",netid.upper())
+            temp.SetValueByTag("OnlyInDues","Yes")
             ReconciledMap[netid]=temp
+
         elif netid in CBUID and netid not in DuesID:
             CBUInfo =CBUID[netid]
             temp=ReconciledEntry.ReconciledEntry()
             temp.CopyCBUInfo(CBUInfo)
+            temp.SetValueByTag("UpdatedWageType","Blank")
+            temp.SetValueByTag("OnlyInCBU","Yes")
             ReconciledMap[netid]=temp
 
+    
+    print ("length is ",len(ReconciledMap))
     wb = Workbook()
 
     temp =os.path.split(CBU_File)[1]
@@ -144,6 +162,7 @@ def Reconcile(CBU_File,Dues_File):
 
     count=2
     for netid,line in ReconciledMap.items():
+            
         if len(line.DuesPersonInfo.Lines) == 0:
             line.SetValueByTag("Date",DefualtDate)
             for i in range(len(ReconciledEntry.ListOfColumnNames)):

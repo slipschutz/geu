@@ -3,7 +3,7 @@
 ################################################################################################################
 #vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv#
 
-NumberOfColumnsInCBU=31
+NumberOfColumnsInCBU=30
 class CBU_Line:
     def __init__(self):
        self.LastName=""
@@ -178,9 +178,9 @@ class CBU_Line:
         elif i==28:
             self.MemberType=v
         elif i==29:
-            self.DuesType=v
+            self.DuesWageType=v
         elif i==30:
-            self.totTermsAsGrad=v
+            self.totTermsAsGrad=v #####this seeems wrong LOOK HERE
         else:
             print ("Error in CBU line")
 
@@ -246,7 +246,7 @@ class CBU_Line:
         elif i==28:
             return self.MemberType 
         elif i==29:
-            return self.DuesType 
+            return self.DuesWageType 
         else:
             return "ERROR IN CBULINe"
 
