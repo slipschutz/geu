@@ -27,7 +27,6 @@ def LoadCBU(FileName):
         if firstRow[i].ctype == 1 : #Text
             HeaderMapName2Num[firstRow[i].value.strip().lower()]=i
             HeaderMapNum2Name[i]=firstRow[i].value.strip().lower()
-
             
 
     #Skip the first line, where there should be 
@@ -36,6 +35,7 @@ def LoadCBU(FileName):
         theRow=sh.row(rowNumber)
         temp = CBU_Line()
         for i in range(0,len(theRow)):
+            ##i==30 is member type
             if theRow[i].ctype == 0 : # for empty cells
                 temp.SetValueWithMap(HeaderMapNum2Name,i," ")
             elif theRow[i].ctype == 1: # for text
